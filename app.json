@@ -1,22 +1,60 @@
 {
   "expo": {
-    "name": "maxima-app",
-    "slug": "maxima-app",
+    "name": "La Max 95.5 APP",
+    "slug": "la-max-955-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "maximaapp",
+    "scheme": "la-max-955-app",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
+    "privacy": "public",
+    "description": "Radio La Max 95.5 FM - Escuchá en vivo desde Ceres, Santa Fe. Música, noticias y programas en directo.",
+    "keywords": ["radio", "la max", "95.5", "ceres", "santa fe", "música", "noticias"],
+    "notification": {
+      "icon": "./assets/images/icon.png",
+      "color": "#6c5ce7",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Máxima FM"
+    },
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.maximaceres.app",
+      "supportsTablet": true,
+      "entitlements": {
+        "aps-environment": "production"
+      },
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio",
+          "remote-notification"
+        ],
+        "AVAudioSessionCategory": "AVAudioSessionCategoryPlayback",
+        "AVAudioSessionCategoryOptions": [
+          "AVAudioSessionCategoryOptionAllowBluetooth",
+          "AVAudioSessionCategoryOptionAllowBluetoothA2DP",
+          "AVAudioSessionCategoryOptionAllowAirPlay"
+        ]
+      },
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
+      "package": "com.maximaceres.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#1a1a2e"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "INTERNET",
+        "WAKE_LOCK",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "RECORD_AUDIO",
+        "MODIFY_AUDIO_SETTINGS"
+      ],
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -24,19 +62,50 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          },
+          "android": {
+            "enableProguardInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true,
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34
+          }
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
+          "imageWidth": 300,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#1a1a2e"
         }
-      ]
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#6c5ce7",
+          "defaultChannel": "default"
+        }
+      ],
+      "expo-build-properties"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "85329c64-afeb-4cdf-a3d8-600ef4ef3f8d"
+      }
     }
   }
 }

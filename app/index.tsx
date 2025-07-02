@@ -1,0 +1,357 @@
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import React, { useEffect, useState } from 'react';
+import { Linking, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+
+// Importaciones de componentes separados
+import { LiveStreamIndicator } from '@/components/LiveStreamIndicator';
+import { MaximaLogo } from '@/components/MaximaLogo';
+import NewsSection from '@/components/NewsSection';
+import { TrackPlayerRadio } from '@/components/TrackPlayerRadio';
+import VideoPlayer from '@/components/VideoPlayer';
+import YouTubeSection from '@/components/YouTubeSection';
+
+// Importaciones de hooks personalizados
+import { FirebaseNotification, useFirebaseNotifications } from '@/hooks/useFirebaseNotifications';
+import { useNews } from '@/hooks/useNews';
+import { useYouTube } from '@/hooks/useYouTube';
+import { useYouTubeRSS } from '@/hooks/useYouTubeRSS';
+
+// Importaciones de configuraciones y utilidades
+import { STREAMING_URLS } from '@/config/constants';
+import { styles } from '@/styles/RadioScreen.styles';
+
+export default function RadioScreen() {
+  // Estados locales
+  const [isVideoMode, setIsVideoMode] = useState(false);
+  const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+  const [scrollY, setScrollY] = useState(0);
+
+  const { 
+    liveStream,
+    checkingLive,
+    loadInitialData,
+    updateManualCountDisplay,
+    checkForLiveStreams,
+    checkForLiveStreamsAndReturn,
+    setLiveStream,
+  } = useYouTube();
+
+  // Hook de notificaciones Firebase
+  const {
+    fcmToken,
+    isPermissionGranted,
+    lastNotification,
+    setOnNotificationReceived,
+    setOnNotificationPressed,
+    subscribeToTopic,
+  } = useFirebaseNotifications();
+
+  // Hook de noticias
+  const {
+    news,
+    loading: newsLoading,
+    lastUpdate: newsLastUpdate,
+    refreshNews
+  } = useNews();
+
+  // Hook de videos YouTube RSS
+  const {
+    videos: youtubeVideos,
+    loading: youtubeLoading,
+    lastUpdate: youtubeLastUpdate,
+    refreshVideos
+  } = useYouTubeRSS();
+
+  // Cargar datos iniciales (solo cache, sin API)
+  useEffect(() => {
+    loadInitialData(); // Solo carga desde cache si existe
+    updateManualCountDisplay(); // Actualizar contador de actualizaciones
+    // Configurar callbacks de notificaciones
+    setupNotificationCallbacks();
+    // Suscribirse a topics de Firebase
+    setupFirebaseTopics();
+  }, []);
+
+  // Configurar los callbacks para manejar notificaciones Firebase
+  const setupNotificationCallbacks = () => {
+    // Callback cuando se recibe una notificación (app abierta)
+    setOnNotificationReceived((notification: FirebaseNotification) => {
+      console.log('🔔 Notificación recibida:', notification);
+      
+      // Verificar que notification no sea null
+      if (!notification) {
+        console.log('⚠️ Notificación es null, ignorando...');
+        return;
+      }
+      
+      // Lógica específica según el tipo
+      if (notification.data?.type) {
+        switch (notification.data.type) {
+          case 'live_stream':
+            console.log('📺 Notificación de livestream recibida');
+            // Podrías mostrar un toast o banner informativo
+            break;
+        }
+      }
+    });
+
+    // Callback cuando el usuario toca una notificación
+    setOnNotificationPressed((notification: FirebaseNotification) => {
+      console.log('🔔 Notificación presionada:', notification);
+      
+      // Verificar que notification no sea null
+      if (!notification) {
+        console.log('⚠️ Notificación presionada es null, ignorando...');
+        return;
+      }
+      
+      // Navegar según el tipo de notificación
+      if (notification.data?.type) {
+        switch (notification.data.type) {
+          case 'live_stream':
+            if (notification.data.videoId) {
+              setSelectedVideoId(notification.data.videoId);
+              setIsVideoMode(true);
+            }
+            break;
+          case 'new_program':
+            // Scrollear a la sección de videos
+            break;
+          case 'urgent':
+          case 'breaking_news':
+            // Podrías abrir una pantalla especial o mostrar el contenido
+            break;
+        }
+      }
+    });
+  };
+
+  // Configurar topics de Firebase
+  const setupFirebaseTopics = async () => {
+    if (isPermissionGranted) {
+      // Suscribirse a topics generales
+      await subscribeToTopic('general');
+      await subscribeToTopic('livestreams');
+      await subscribeToTopic('programs');
+      
+      console.log('✅ Suscrito a topics de Firebase');
+    }
+  };
+
+  const toggleMode = async () => {
+    const newVideoMode = !isVideoMode;
+    setIsVideoMode(newVideoMode);
+    
+    // Al cambiar A modo video, verificar livestreams y decidir qué cargar inmediatamente
+    if (newVideoMode) {
+      
+      try {
+        // Usar la nueva función que retorna el resultado directamente
+        const foundLiveStream = await checkForLiveStreamsAndReturn();
+        
+        // Ahora decidir qué cargar basado en el resultado
+        if (foundLiveStream && foundLiveStream.isLive && foundLiveStream.videoId) {
+          
+          // Asegurar sincronización: actualizar tanto selectedVideoId como liveStream
+          setSelectedVideoId(foundLiveStream.videoId);
+          // El estado liveStream ya se actualizó en checkForLiveStreamsAndReturn()
+          
+        } else {
+          setSelectedVideoId(null); // null = Twitch default
+        }
+        
+      } catch (error) {
+        console.error('❌ Error verificando livestreams:', error);
+        setSelectedVideoId(null);
+      }
+    }
+  };
+
+  const openInfo = () => {
+    router.push('/info');
+  };
+
+  const handleVideoPress = (videoId: string) => {
+    setSelectedVideoId(videoId);
+    setIsVideoMode(true);
+  };
+
+  const handleBackToLive = () => {
+    setSelectedVideoId(null);
+  };
+
+  // Handler para el scroll
+  const handleScroll = (event: any) => {
+    const currentScrollY = event.nativeEvent.contentOffset.y;
+    setScrollY(currentScrollY);
+  };
+
+  // Función para verificar livestreams manualmente
+  const handleCheckLiveStreams = () => {
+    checkForLiveStreams();
+  };
+
+  // Función para iniciar livestream
+  const startLiveStream = async (liveStreamData: any) => {
+    setSelectedVideoId(liveStreamData.videoId);
+    setIsVideoMode(true);
+    setLiveStream(liveStreamData);
+  };
+
+
+  // Función para abrir WhatsApp
+  const openWhatsApp = () => {
+    const phoneNumber = '+54349115416237'; // Reemplaza con el número de teléfono de Máxima FM https://wa.me/54349115416237
+    const message = encodeURIComponent('¡Hola! Estoy escuchando 📻');
+    const whatsappUrl = `whatsapp://send?phone=${phoneNumber}&text=${message}`;
+    const webWhatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+    
+    Linking.canOpenURL(whatsappUrl)
+      .then((supported) => {
+        if (supported) {
+          return Linking.openURL(whatsappUrl);
+        } else {
+          // Si no puede abrir la app nativa, intenta con la versión web
+          return Linking.openURL(webWhatsappUrl);
+        }
+      })
+      .catch((err) => {
+        console.error('Error abriendo WhatsApp:', err);
+        // Como fallback, abre la versión web
+        Linking.openURL(webWhatsappUrl);
+      });
+  };
+
+  return (
+    <LinearGradient
+      colors={['#1a1a2e', '#16213e', '#0f3460']}
+      style={styles.container}
+    >
+      <StatusBar style="light" />
+      
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+      >
+        {/* Logo Header */}
+        <View style={styles.logoContainer}>
+          <View style={styles.leftSpacer} />
+          <View style={styles.logoCenter}>
+            <MaximaLogo width={160} height={50} color="white" />
+          </View>
+          <TouchableOpacity style={styles.infoButton} onPress={openInfo}>
+            <Ionicons name="information-circle-outline" size={28} color="#a29bfe" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Mode Toggle Switch */}
+        <View style={styles.switchContainer}>
+          <TouchableOpacity 
+            style={[styles.switchButton, !isVideoMode && styles.switchButtonActive]}
+            onPress={() => !isVideoMode || toggleMode()}
+          >
+            <Ionicons 
+              name="volume-high" 
+              size={20} 
+              color={!isVideoMode ? 'white' : '#a29bfe'} 
+            />
+            <Text style={[styles.switchText, !isVideoMode && styles.switchTextActive]}>
+              Audio
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.switchButton, isVideoMode && styles.switchButtonActive]}
+            onPress={() => isVideoMode || toggleMode()}
+          >
+            <Ionicons 
+              name="videocam" 
+              size={20} 
+              color={isVideoMode ? 'white' : '#a29bfe'} 
+            />
+            <Text style={[styles.switchText, isVideoMode && styles.switchTextActive]}>
+              Video
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Central Player */}
+        <View style={styles.playerContainer}>
+          {isVideoMode ? (
+            <VideoPlayer 
+              selectedVideoId={selectedVideoId}
+              onBackToLive={handleBackToLive}
+            />
+          ) : (
+            <TrackPlayerRadio 
+              streamUrl={STREAMING_URLS.radioStream}
+              title="Máxima FM 95.5"
+              artist="En vivo desde Ceres"
+            />
+          )}
+
+          {/* Station Info */}
+          <View style={styles.stationInfo}>
+            <Text style={styles.stationName}>La Max Stream Radio</Text>
+            <Text style={styles.frequency}>95.5 FM</Text>
+            
+            
+            {/* Componente unificado para mostrar información del livestream */}
+            <LiveStreamIndicator
+              liveStream={liveStream}
+              mode={isVideoMode ? 'video' : 'audio'}
+              selectedVideoId={selectedVideoId}
+              onPress={() => startLiveStream(liveStream)}
+            />
+          </View>
+          
+        </View>
+
+
+        {/* Volume and Quality Info */}
+        <View style={styles.controlsContainer}>
+          <View style={styles.whatsappContainer}>
+            <TouchableOpacity 
+              style={styles.whatsappButton}
+              onPress={openWhatsApp}
+            >
+              <Ionicons 
+                name="logo-whatsapp" 
+                size={28} 
+                color="white" 
+              />
+              <Text style={styles.whatsappText}>
+                Enviar mensaje
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Sección de Noticias */}
+        <NewsSection
+          news={news}
+          loading={newsLoading}
+          lastUpdate={newsLastUpdate}
+          onRefresh={refreshNews}
+        />
+
+        {/* Sección de YouTube con RSS */}
+        <YouTubeSection
+          videos={youtubeVideos}
+          loading={youtubeLoading}
+          lastUpdate={youtubeLastUpdate}
+          onRefresh={refreshVideos}
+        />
+
+        {/* Bottom Space */}
+        <View style={styles.bottomSpace} />
+      </ScrollView>
+    </LinearGradient>
+  );
+}

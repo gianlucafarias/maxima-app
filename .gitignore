@@ -37,3 +37,8 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+.env
+
+google-services.json
+GoogleService-Info.plist
