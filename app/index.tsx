@@ -1,27 +1,31 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
-import { Linking, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 // Importaciones de componentes separados
 import { LiveStreamIndicator } from '@/components/LiveStreamIndicator';
 import { MaximaLogo } from '@/components/MaximaLogo';
 import NewsSection from '@/components/NewsSection';
-import { TrackPlayerRadio } from '@/components/TrackPlayerRadio';
+import { TrackPlayerRadio, TrackPlayerRadioRef } from '@/components/TrackPlayerRadio';
 import VideoPlayer from '@/components/VideoPlayer';
 import YouTubeSection from '@/components/YouTubeSection';
 
 // Importaciones de hooks personalizados
 import { FirebaseNotification, useFirebaseNotifications } from '@/hooks/useFirebaseNotifications';
 import { useNews } from '@/hooks/useNews';
+
 import { useYouTube } from '@/hooks/useYouTube';
 import { useYouTubeRSS } from '@/hooks/useYouTubeRSS';
 
 // Importaciones de configuraciones y utilidades
 import { STREAMING_URLS } from '@/config/constants';
 import { styles } from '@/styles/RadioScreen.styles';
+
+const { width, height } = Dimensions.get('window');
 
 export default function RadioScreen() {
   // Estados locales
@@ -64,6 +68,9 @@ export default function RadioScreen() {
     lastUpdate: youtubeLastUpdate,
     refreshVideos
   } = useYouTubeRSS();
+
+  // Referencia para el TrackPlayerRadio
+  const trackPlayerRadioRef = useRef<TrackPlayerRadioRef | null>(null);
 
   // Cargar datos iniciales (solo cache, sin API)
   useEffect(() => {
@@ -143,31 +150,19 @@ export default function RadioScreen() {
 
   const toggleMode = async () => {
     const newVideoMode = !isVideoMode;
-    setIsVideoMode(newVideoMode);
     
-    // Al cambiar A modo video, verificar livestreams y decidir qué cargar inmediatamente
-    if (newVideoMode) {
-      
+    // Si está cambiando a modo video, parar el audio
+    if (newVideoMode && trackPlayerRadioRef.current) {
+      console.log('🎵 Cambiando a modo video, parando audio...');
       try {
-        // Usar la nueva función que retorna el resultado directamente
-        const foundLiveStream = await checkForLiveStreamsAndReturn();
-        
-        // Ahora decidir qué cargar basado en el resultado
-        if (foundLiveStream && foundLiveStream.isLive && foundLiveStream.videoId) {
-          
-          // Asegurar sincronización: actualizar tanto selectedVideoId como liveStream
-          setSelectedVideoId(foundLiveStream.videoId);
-          // El estado liveStream ya se actualizó en checkForLiveStreamsAndReturn()
-          
-        } else {
-          setSelectedVideoId(null); // null = Twitch default
-        }
-        
+        await trackPlayerRadioRef.current.stopAudio();
+        console.log('✅ Audio parado correctamente');
       } catch (error) {
-        console.error('❌ Error verificando livestreams:', error);
-        setSelectedVideoId(null);
+        console.error('❌ Error parando audio:', error);
       }
     }
+    
+    setIsVideoMode(newVideoMode);
   };
 
   const openInfo = () => {
@@ -200,7 +195,6 @@ export default function RadioScreen() {
     setIsVideoMode(true);
     setLiveStream(liveStreamData);
   };
-
 
   // Función para abrir WhatsApp
   const openWhatsApp = () => {
@@ -293,6 +287,7 @@ export default function RadioScreen() {
               streamUrl={STREAMING_URLS.radioStream}
               title="Máxima FM 95.5"
               artist="En vivo desde Ceres"
+              ref={trackPlayerRadioRef}
             />
           )}
 

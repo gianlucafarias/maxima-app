@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "La Max 95.5 APP",
+    "name": "La Max Stream Radio",
     "slug": "la-max-955-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,8 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
     "privacy": "public",
-    "description": "Radio La Max 95.5 FM - Escuchá en vivo desde Ceres, Santa Fe. Música, noticias y programas en directo.",
-    "keywords": ["radio", "la max", "95.5", "ceres", "santa fe", "música", "noticias"],
+    "description": "La Max Stream Radio 95.5 FM - Escuchá en vivo desde Ceres, Santa Fe. Música, noticias y programas en directo.",
+    "keywords": ["radio", "la max", "95.5", "ceres", "santa fe", "música", "noticias", "maxima fm", "maxima fm 95.5", "ceres santa fe argentina", "ceres ciudad"],
     "notification": {
       "icon": "./assets/images/icon.png",
       "color": "#6c5ce7",

@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { ActivityIndicator, Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useTrackPlayer } from '../hooks/useTrackPlayer';
 
@@ -13,20 +13,33 @@ interface TrackPlayerRadioProps {
   artwork?: string;
 }
 
-export const TrackPlayerRadio: React.FC<TrackPlayerRadioProps> = ({
+export interface TrackPlayerRadioRef {
+  stopAudio: () => Promise<void>;
+}
+
+export const TrackPlayerRadio = forwardRef<TrackPlayerRadioRef, TrackPlayerRadioProps>(({
   streamUrl,
   title = 'Máxima FM 95.5',
   artist = 'La mejor música en vivo',
   artwork = require('../assets/images/maxima.svg'),
-}) => {
+}, ref) => {
   const {
     isPlayerReady,
     isInitializing,
     addRadioStream,
     togglePlayback,
+    stopAndReset,
     isPlaying,
     currentTrack,
   } = useTrackPlayer();
+
+  // Exponer función para parar el audio desde el padre
+  useImperativeHandle(ref, () => ({
+    stopAudio: async () => {
+      console.log('🛑 Parando audio desde ref...');
+      await stopAndReset();
+    }
+  }), [stopAndReset]);
 
   // Agregar stream cuando el player esté listo
   useEffect(() => {
@@ -109,7 +122,7 @@ export const TrackPlayerRadio: React.FC<TrackPlayerRadioProps> = ({
       
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
