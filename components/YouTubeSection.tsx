@@ -3,15 +3,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Image,
-    Linking,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Alert,
+  Image,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
 interface YouTubeSectionProps {
@@ -35,7 +35,6 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
 
   const openVideo = async (url: string, title: string) => {
     try {
-      console.log('🔍 Intentando abrir video:', { url, title });
       
       // Verificar que la URL sea válida
       if (!url || !url.includes('youtube.com')) {
@@ -57,35 +56,29 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
         return;
       }
 
-      console.log('🆔 Video ID extraído:', videoId);
 
       // Construir URLs
       const youtubeAppUrl = `youtube://watch?v=${videoId}`;
       const youtubeBrowserUrl = `https://www.youtube.com/watch?v=${videoId}`;
 
-      console.log('📱 Intentando abrir en app YouTube:', youtubeAppUrl);
 
       // 1. Intentar abrir en la app de YouTube primero
       try {
         const canOpenYouTube = await Linking.canOpenURL(youtubeAppUrl);
-        console.log('✅ Puede abrir app YouTube:', canOpenYouTube);
         
         if (canOpenYouTube) {
-          console.log('🚀 Abriendo en app YouTube...');
           await Linking.openURL(youtubeAppUrl);
           return;
         }
       } catch (youtubeError) {
-        console.log('⚠️ Error verificando app YouTube:', youtubeError);
+        console.error('⚠️ Error verificando app YouTube:', youtubeError);
       }
 
       // 2. En emuladores, canOpenURL puede fallar para navegadores
       // Intentar abrir directamente en navegador sin verificar canOpenURL
-      console.log('🌐 Intentando abrir directamente en navegador:', youtubeBrowserUrl);
       
       try {
         await Linking.openURL(youtubeBrowserUrl);
-        console.log('✅ Abierto exitosamente en navegador');
         return;
       } catch (browserError) {
         console.error('❌ Error abriendo en navegador:', browserError);
@@ -100,12 +93,10 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
 
       for (const altUrl of alternativeUrls) {
         try {
-          console.log('🔄 Probando URL alternativa:', altUrl);
           await Linking.openURL(altUrl);
-          console.log('✅ Abierto con URL alternativa');
           return;
         } catch (altError) {
-          console.log('⚠️ URL alternativa falló:', altError instanceof Error ? altError.message : 'Error desconocido');
+          console.error('⚠️ URL alternativa falló:', altError instanceof Error ? altError.message : 'Error desconocido');
         }
       }
 
@@ -119,8 +110,7 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
           { 
             text: 'Copiar enlace', 
             onPress: () => {
-              console.log('📋 URL para copiar:', youtubeBrowserUrl);
-              Alert.alert(
+              Alert.alert(  
                 'Enlace copiado', 
                 `Enlace del video:\n${youtubeBrowserUrl}`,
                 [{ text: 'OK' }]
@@ -140,7 +130,6 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
           { 
             text: 'Ver detalles', 
             onPress: () => {
-              console.log('Error details:', { url, title, error });
               Alert.alert('Detalles del error', `${error}`);
             }
           }
@@ -198,7 +187,6 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
       ]
     );
 
-    console.log('🔍 DEBUG - Todos los videos:', videos);
   };
 
   const formatLastUpdate = () => {
@@ -227,15 +215,7 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
         </View>
         
         <View style={styles.headerActions}>
-          {/* Botón temporal de debug */}
-          {videos.length > 0 && (
-            <TouchableOpacity 
-              style={styles.debugButton}
-              onPress={showDebugInfo}
-            >
-              <Ionicons name="bug-outline" size={18} color="#666" />
-            </TouchableOpacity>
-          )}
+          
           
           <TouchableOpacity 
             style={[styles.refreshButton, loading && styles.refreshButtonDisabled]}

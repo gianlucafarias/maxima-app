@@ -86,11 +86,9 @@ export default function RadioScreen() {
   const setupNotificationCallbacks = () => {
     // Callback cuando se recibe una notificación (app abierta)
     setOnNotificationReceived((notification: FirebaseNotification) => {
-      console.log('🔔 Notificación recibida:', notification);
       
       // Verificar que notification no sea null
       if (!notification) {
-        console.log('⚠️ Notificación es null, ignorando...');
         return;
       }
       
@@ -98,7 +96,6 @@ export default function RadioScreen() {
       if (notification.data?.type) {
         switch (notification.data.type) {
           case 'live_stream':
-            console.log('📺 Notificación de livestream recibida');
             // Podrías mostrar un toast o banner informativo
             break;
         }
@@ -107,11 +104,9 @@ export default function RadioScreen() {
 
     // Callback cuando el usuario toca una notificación
     setOnNotificationPressed((notification: FirebaseNotification) => {
-      console.log('🔔 Notificación presionada:', notification);
       
       // Verificar que notification no sea null
       if (!notification) {
-        console.log('⚠️ Notificación presionada es null, ignorando...');
         return;
       }
       
@@ -144,7 +139,6 @@ export default function RadioScreen() {
       await subscribeToTopic('livestreams');
       await subscribeToTopic('programs');
       
-      console.log('✅ Suscrito a topics de Firebase');
     }
   };
 
@@ -153,10 +147,8 @@ export default function RadioScreen() {
     
     // Si está cambiando a modo video, parar el audio
     if (newVideoMode && trackPlayerRadioRef.current) {
-      console.log('🎵 Cambiando a modo video, parando audio...');
       try {
         await trackPlayerRadioRef.current.stopAudio();
-        console.log('✅ Audio parado correctamente');
       } catch (error) {
         console.error('❌ Error parando audio:', error);
       }

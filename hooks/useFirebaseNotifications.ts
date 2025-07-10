@@ -31,12 +31,10 @@ export function useFirebaseNotifications() {
         authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
       if (enabled) {
-        console.log('✅ Firebase Messaging autorizado:', authStatus);
         setIsPermissionGranted(true);
 
         // 2. Obtener FCM token
         const token = await messaging().getToken();
-        console.log('🔑 FCM Token:', token);
         setFcmToken(token);
 
         // 3. Enviar token al servidor (opcional)
@@ -49,7 +47,6 @@ export function useFirebaseNotifications() {
         handleInitialNotification();
 
       } else {
-        console.log('❌ Permisos de Firebase Messaging denegados');
         setIsPermissionGranted(false);
       }
 
@@ -61,7 +58,6 @@ export function useFirebaseNotifications() {
   const setupMessageListeners = () => {
     // Listener para mensajes cuando la app está en FOREGROUND
     const unsubscribeForeground = messaging().onMessage(async remoteMessage => {
-      console.log('🔔 Mensaje recibido en foreground:', remoteMessage);
       
       const notification: FirebaseNotification = {
         title: remoteMessage.notification?.title,
@@ -81,7 +77,6 @@ export function useFirebaseNotifications() {
 
     // Listener para cuando el usuario TOCA una notificación (app en background)
     const unsubscribeNotificationOpen = messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log('🔔 Notificación tocada (app en background):', remoteMessage);
       
       const notification: FirebaseNotification = {
         title: remoteMessage.notification?.title,
@@ -99,7 +94,6 @@ export function useFirebaseNotifications() {
 
     // Listener para actualizaciones del token
     const unsubscribeTokenRefresh = messaging().onTokenRefresh(token => {
-      console.log('🔄 FCM Token actualizado:', token);
       setFcmToken(token);
       sendTokenToServer(token);
     });
@@ -117,7 +111,6 @@ export function useFirebaseNotifications() {
     const remoteMessage = await messaging().getInitialNotification();
     
     if (remoteMessage) {
-      console.log('🔔 App abierta desde notificación:', remoteMessage);
       
       const notification: FirebaseNotification = {
         title: remoteMessage.notification?.title,
@@ -136,7 +129,6 @@ export function useFirebaseNotifications() {
 
   const sendTokenToServer = async (token: string) => {
     try {
-      console.log('📤 Enviando FCM token al servidor...');
       
       // Aquí implementarías el envío a tu servidor/dashboard
       // Ejemplo:
@@ -168,7 +160,6 @@ export function useFirebaseNotifications() {
   const subscribeToTopic = async (topic: string) => {
     try {
       await messaging().subscribeToTopic(topic);
-      console.log(`✅ Suscrito al topic: ${topic}`);
     } catch (error) {
       console.error(`❌ Error suscribiéndose al topic ${topic}:`, error);
     }
@@ -178,7 +169,6 @@ export function useFirebaseNotifications() {
   const unsubscribeFromTopic = async (topic: string) => {
     try {
       await messaging().unsubscribeFromTopic(topic);
-      console.log(`✅ Desuscrito del topic: ${topic}`);
     } catch (error) {
       console.error(`❌ Error desuscribiéndose del topic ${topic}:`, error);
     }

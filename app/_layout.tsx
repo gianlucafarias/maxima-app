@@ -31,18 +31,15 @@ export default function RootLayout() {
   // Manejar deep links de TrackPlayer notificación
   useEffect(() => {
     const handleDeepLink = (url: string) => {
-      console.log('🔗 Deep link recibido:', url);
       
       // Si es el deep link de la notificación de TrackPlayer, ir al index
       if (url === 'trackplayer://notification.click' || 
           url.includes('trackplayer://notification') ||
           url.includes('la-max-955-app://')) {
-        console.log('📱 Navegando a index desde notificación...');
         
         // Navegar al index usando Expo Router
         try {
           router.push('/');
-          console.log('✅ Navegación exitosa al index');
         } catch (error) {
           console.error('❌ Error navegando al index:', error);
         }

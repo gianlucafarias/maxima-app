@@ -21,7 +21,6 @@ export const setupNotificationChannels = async () => {
         lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
       });
 
-      console.log('✅ Canales de notificación de Android configurados');
     } catch (error) {
       console.error('❌ Error configurando canales de notificación:', error);
     }
@@ -86,7 +85,6 @@ export const setupMediaControlCategories = async () => {
       },
     ]);
 
-    console.log('✅ Categorías de media controls configuradas');
   } catch (error) {
     console.error('❌ Error configurando categorías:', error);
   }
@@ -94,13 +92,11 @@ export const setupMediaControlCategories = async () => {
 
 // Inicialización completa del sistema de media
 export const initializeMediaSession = async () => {
-  console.log('🎵 Inicializando sistema de media...');
   
   try {
     await setupNotificationChannels();
     await setupMediaControlCategories();
     
-    console.log('✅ Sistema de media inicializado correctamente');
   } catch (error) {
     console.error('❌ Error inicializando sistema de media:', error);
   }

@@ -40,5 +40,34 @@ app-example
 
 .env
 
+# 🔒 FIREBASE SENSITIVE FILES - NEVER COMMIT THESE
 google-services.json
 GoogleService-Info.plist
+android/app/google-services.json
+
+# 🔑 Additional security files
+*.keystore
+*.p12
+*.mobileprovision
+**/secrets/
+**/credentials/
+**/*-key.json
+**/*-service-account*.json
+
+# 🚨 Backup sensitive files (in case of accidental naming)
+*google-services*
+*GoogleService*
+*firebase-config*
+*firebase-credentials*
+
+# 📱 Platform specific sensitive
+ios/GoogleService-Info.plist
+android/google-services.json
+android/app/google-services.json
+android/**/google-services.json
+
+# 🔐 API keys and tokens
+**/api-keys.json
+**/tokens.json
+**/*-token.txt
+**/*-secret.*

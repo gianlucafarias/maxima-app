@@ -34,7 +34,6 @@ export const useImprovedAudio = () => {
 
   const initializeAudio = async () => {
     try {
-      console.log('🎵 Inicializando audio mejorado...');
       
       // Configurar canales de notificación de Android
       if (Platform.OS === 'android') {
@@ -50,7 +49,6 @@ export const useImprovedAudio = () => {
       // Configurar manejadores de notificaciones
       setupNotificationHandlers();
       
-      console.log('✅ Audio mejorado inicializado');
     } catch (error) {
       console.error('❌ Error inicializando audio:', error);
     }
@@ -66,7 +64,6 @@ export const useImprovedAudio = () => {
         lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
       });
 
-      console.log('✅ Canales de Android configurados');
     } catch (error) {
       console.error('❌ Error configurando canales:', error);
     }
@@ -104,7 +101,6 @@ export const useImprovedAudio = () => {
         allowsRecordingIOS: false,
       });
 
-      console.log('✅ Sesión de audio optimizada');
     } catch (error) {
       console.error('❌ Error configurando sesión:', error);
     }
@@ -171,7 +167,6 @@ export const useImprovedAudio = () => {
         },
       ]);
 
-      console.log('✅ Categorías de notificación configuradas');
     } catch (error) {
       console.error('❌ Error configurando categorías:', error);
     }
@@ -180,7 +175,6 @@ export const useImprovedAudio = () => {
   const handleNotificationResponse = (response: any) => {
     const action = response.actionIdentifier;
     
-    console.log('🎵 Acción recibida:', action);
     
     switch (action) {
       case 'PLAY_ACTION':
@@ -199,7 +193,6 @@ export const useImprovedAudio = () => {
   };
 
   const handleAppStateChange = (nextAppState: any) => {
-    console.log('📱 App state:', appState, '->', nextAppState);
     
     if (appState.match(/inactive|background/) && nextAppState === 'active') {
       // App vuelve a primer plano
@@ -220,7 +213,6 @@ export const useImprovedAudio = () => {
       if (sound) {
         const status = await sound.getStatusAsync();
         if (status.isLoaded && !status.isPlaying && isPlaying) {
-          console.log('🔄 Reactivando reproducción...');
           await sound.playAsync();
         }
       }
@@ -260,7 +252,6 @@ export const useImprovedAudio = () => {
         identifier: 'ENHANCED_MEDIA_CONTROLS',
       });
 
-      console.log('✅ Controles mejorados mostrados');
     } catch (error) {
       console.error('❌ Error mostrando controles:', error);
     }
@@ -269,7 +260,6 @@ export const useImprovedAudio = () => {
   const playAudio = async () => {
     try {
       setIsLoading(true);
-      console.log('▶️ Iniciando reproducción mejorada...');
 
       // Limpiar audio previo
       if (sound) {
@@ -299,7 +289,6 @@ export const useImprovedAudio = () => {
       // Mostrar controles mejorados
       await showEnhancedMediaControls(true);
 
-      console.log('✅ Reproducción iniciada con controles mejorados');
     } catch (error) {
       console.error('❌ Error reproduciendo:', error);
       setIsLoading(false);
@@ -309,7 +298,6 @@ export const useImprovedAudio = () => {
 
   const pauseAudio = async () => {
     try {
-      console.log('⏸️ Pausando reproducción...');
       
       if (sound) {
         await sound.pauseAsync();
@@ -317,7 +305,6 @@ export const useImprovedAudio = () => {
       }
       
       setIsPlaying(false);
-      console.log('✅ Reproducción pausada');
     } catch (error) {
       console.error('❌ Error pausando:', error);
     }
@@ -325,7 +312,6 @@ export const useImprovedAudio = () => {
 
   const stopAudio = async () => {
     try {
-      console.log('⏹️ Deteniendo reproducción...');
       
       if (sound) {
         await sound.stopAsync();
@@ -336,7 +322,6 @@ export const useImprovedAudio = () => {
       setIsPlaying(false);
       await clearMediaControls();
       
-      console.log('✅ Reproducción detenida');
     } catch (error) {
       console.error('❌ Error deteniendo:', error);
     }
@@ -374,7 +359,6 @@ export const useImprovedAudio = () => {
   const clearMediaControls = async () => {
     try {
       await Notifications.dismissNotificationAsync('ENHANCED_MEDIA_CONTROLS');
-      console.log('✅ Controles limpiados');
     } catch (error) {
       console.error('❌ Error limpiando controles:', error);
     }
@@ -387,7 +371,7 @@ export const useImprovedAudio = () => {
         setSound(null);
       }
       await clearMediaControls();
-      console.log('✅ Limpieza completada');
+      
     } catch (error) {
       console.error('❌ Error en limpieza:', error);
     }

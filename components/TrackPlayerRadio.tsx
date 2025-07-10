@@ -36,7 +36,7 @@ export const TrackPlayerRadio = forwardRef<TrackPlayerRadioRef, TrackPlayerRadio
   // Exponer función para parar el audio desde el padre
   useImperativeHandle(ref, () => ({
     stopAudio: async () => {
-      console.log('🛑 Parando audio desde ref...');
+      if (__DEV__) console.log('🛑 Parando audio desde ref...');
       await stopAndReset();
     }
   }), [stopAndReset]);
@@ -44,7 +44,7 @@ export const TrackPlayerRadio = forwardRef<TrackPlayerRadioRef, TrackPlayerRadio
   // Agregar stream cuando el player esté listo
   useEffect(() => {
     if (isPlayerReady && streamUrl) {
-      console.log('🎵 Player listo, agregando stream...');
+      if (__DEV__) console.log('🎵 Player listo, agregando stream...');
       addRadioStream({
         id: 'maxima-fm-stream',
         url: streamUrl,
@@ -56,7 +56,7 @@ export const TrackPlayerRadio = forwardRef<TrackPlayerRadioRef, TrackPlayerRadio
   }, [isPlayerReady, streamUrl]);
 
   const handlePlayPause = () => {
-    console.log('🎵 Button pressed, isPlayerReady:', isPlayerReady, 'isInitializing:', isInitializing);
+    if (__DEV__) console.log('🎵 Button pressed, isPlayerReady:', isPlayerReady, 'isInitializing:', isInitializing);
     if (isPlayerReady && !isInitializing) {
       togglePlayback();
     }
@@ -123,6 +123,9 @@ export const TrackPlayerRadio = forwardRef<TrackPlayerRadioRef, TrackPlayerRadio
     </View>
   );
 });
+
+// Agregar displayName para ESLint
+TrackPlayerRadio.displayName = 'TrackPlayerRadio';
 
 const styles = StyleSheet.create({
   container: {

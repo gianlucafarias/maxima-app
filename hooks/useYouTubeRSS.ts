@@ -28,8 +28,6 @@ export const useYouTubeRSS = () => {
       return '';
     }
 
-    console.log(`🔍 Extrayendo video ID de: ${link}`);
-
     try {
       // Patrones para diferentes formatos de URL de YouTube
       const patterns = [
@@ -44,7 +42,7 @@ export const useYouTubeRSS = () => {
         const match = link.match(pattern);
         if (match && match[1]) {
           const videoId = match[1];
-          console.log(`✅ Video ID encontrado con patrón: ${videoId}`);
+          
           
           // Validar que el ID tenga exactamente 11 caracteres
           if (videoId.length === 11) {
@@ -91,28 +89,24 @@ export const useYouTubeRSS = () => {
     const videos: YouTubeVideo[] = [];
 
     try {
-      console.log('🔍 Parseando RSS XML...');
       
       // Buscar todos los items
       const itemMatches = xmlText.match(/<item>[\s\S]*?<\/item>/g);
-      console.log(`📄 Encontrados ${itemMatches?.length || 0} items en RSS`);
       
       if (itemMatches) {
         itemMatches.forEach((item, index) => {
           try {
-            console.log(`\n🔍 Parseando item ${index + 1}:`);
             
             // Extraer título
             const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/) || 
                               item.match(/<title>(.*?)<\/title>/);
             const title = titleMatch ? titleMatch[1].trim() : `Video ${index + 1}`;
-            console.log(`📝 Título: ${title}`);
+            
 
             // Extraer enlace - mejorar la extracción
             const linkMatch = item.match(/<link>(.*?)<\/link>/);
             let link = linkMatch ? linkMatch[1].trim() : '';
             
-            console.log(`🔗 Link original: ${link}`);
 
             // Verificar si el link es válido de YouTube
             if (!link.includes('youtube.com') && !link.includes('youtu.be')) {
@@ -122,7 +116,6 @@ export const useYouTubeRSS = () => {
 
             // Limpiar la URL si tiene caracteres extraños
             link = link.replace(/&amp;/g, '&').trim();
-            console.log(`🔗 Link limpio: ${link}`);
 
             // Extraer thumbnail de media:content
             const thumbnailMatch = item.match(/<media:content url="(.*?)" medium="image"/);
@@ -139,7 +132,6 @@ export const useYouTubeRSS = () => {
 
             // Extraer video ID del link
             const videoId = extractVideoId(link);
-            console.log(`🆔 Video ID extraído: ${videoId}`);
 
             if (!videoId) {
               console.warn(`⚠️ No se pudo extraer video ID de: ${link}`);
@@ -149,7 +141,6 @@ export const useYouTubeRSS = () => {
             // Generar thumbnail si no existe
             if (!thumbnail) {
               thumbnail = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
-              console.log(`🖼️ Thumbnail generado: ${thumbnail}`);
             }
 
             const video = {
@@ -161,12 +152,7 @@ export const useYouTubeRSS = () => {
               creator
             };
 
-            console.log(`✅ Video parseado correctamente:`, {
-              id: video.id,
-              title: video.title.substring(0, 50) + '...',
-              link: video.link,
-              publishDate: video.publishDate
-            });
+
 
             videos.push(video);
 
@@ -176,7 +162,6 @@ export const useYouTubeRSS = () => {
         });
       }
 
-      console.log(`✅ RSS parseado: ${videos.length} videos válidos encontrados`);
       
     } catch (error) {
       console.error('❌ Error parseando RSS XML:', error);
@@ -233,7 +218,6 @@ export const useYouTubeRSS = () => {
       if (!forceRefresh) {
         const cached = await loadFromCache();
         if (cached) {
-          console.log('📦 Videos cargados desde caché RSS');
           setVideos(cached.videos);
           setLastUpdate(new Date(cached.timestamp));
           setLoading(false);
@@ -241,7 +225,6 @@ export const useYouTubeRSS = () => {
         }
       }
 
-      console.log('🌐 Fetching videos desde RSS...');
       const response = await fetch(RSS_URL);
 
       if (!response.ok) {
@@ -252,7 +235,6 @@ export const useYouTubeRSS = () => {
       const parsedVideos = parseRSSXML(xmlText);
 
       if (parsedVideos.length > 0) {
-        console.log(`✅ ${parsedVideos.length} videos cargados desde RSS`);
         setVideos(parsedVideos);
         await saveToCache(parsedVideos);
         setLastUpdate(new Date());
@@ -267,7 +249,6 @@ export const useYouTubeRSS = () => {
       // En caso de error, intentar cargar desde caché
       const cached = await loadFromCache();
       if (cached) {
-        console.log('📦 Usando caché como fallback');
         setVideos(cached.videos);
         setLastUpdate(new Date(cached.timestamp));
       }

@@ -216,13 +216,11 @@ export const useYouTube = () => {
 
   // Función para actualización manual (carga los últimos videos del canal)
   const fetchAllChannelVideos = async (forceUpdate: boolean = false, isManual: boolean = false): Promise<void> => {
-    console.log('🔍 Cargando últimos videos del canal...');
     
     // Si es manual, verificar límite de actualizaciones
     if (isManual) {
       const canUpdate = await incrementManualCount();
       if (!canUpdate) {
-        console.log('❌ Límite de actualizaciones manuales alcanzado para hoy');
         return;
       }
     }
@@ -306,16 +304,13 @@ export const useYouTube = () => {
     try {
       // 🚀 OPTIMIZACIÓN 1: Usar caché si es reciente
       if (canUseLiveCache()) {
-        console.log(`📦 Usando resultado cacheado (${Math.round((new Date().getTime() - lastLiveCheck!.getTime()) / (1000 * 60))}min ago)`);
         setLiveStream(cachedLiveResult);
         setCheckingLive(false);
         return cachedLiveResult;
       }
 
-      console.log('🔄 RSS verificando livestreams...');
       const rssResult = await checkLiveStreamViaRSS();
       if (rssResult) {
-        console.log('✅ RSS encontró livestream');
         setLiveStream(rssResult);
         setCachedLiveResult(rssResult);
         setLastLiveCheck(new Date());
@@ -324,7 +319,6 @@ export const useYouTube = () => {
 
       // 🚀 OPTIMIZACIÓN 2: Solo usar API si realmente necesitamos
       if (canUseAPI()) {
-        console.log('🔄 RSS no encontró livestreams, verificando con API optimizada...');
         incrementAPICall();
         
         const apiResult = await checkLiveStreamViaAPI();
@@ -337,12 +331,10 @@ export const useYouTube = () => {
           setLiveStream(apiResult);
           return apiResult;
         } else {
-          console.log('ℹ️ No hay livestreams activos');
           setLiveStream(null);
           return null;
         }
       } else {
-        console.log('⚠️ No hay cuota de API disponible, usando solo RSS');
         setLiveStream(null);
         return null;
       }
@@ -427,22 +419,18 @@ export const useYouTube = () => {
       throw new Error('YouTube Channel ID not configured');
     }
 
-    console.log('🔍 Verificando livestreams vía API (optimizada)...');
 
     try {
       // MÉTODO 1: Buscar livestreams directamente (más eficiente)
-      console.log('🎯 Intentando endpoint directo de livestreams...');
       const liveSearchUrl = `https://www.googleapis.com/youtube/v3/search?key=${STREAMING_URLS.youtubeApiKey}&channelId=${STREAMING_URLS.youtubeChannelId}&part=snippet&eventType=live&type=video&maxResults=1`;
       
       const liveResponse = await fetch(liveSearchUrl);
       
       if (liveResponse.ok) {
         const liveData = await liveResponse.json();
-        console.log('✅ Endpoint directo funcionó');
         
         if (liveData.items && liveData.items.length > 0) {
           const liveVideo = liveData.items[0];
-          console.log('🔴 LIVESTREAM ACTIVO encontrado:', liveVideo.snippet.title);
           
           return {
             videoId: liveVideo.id.videoId,
@@ -452,13 +440,12 @@ export const useYouTube = () => {
             isLive: true
           };
         } else {
-          console.log('ℹ️ No hay livestreams activos (endpoint directo)');
+          
           return null;
         }
       }
       
       // MÉTODO 2: Fallback - buscar videos recientes pero optimizado
-      console.log('⚠️ Endpoint directo falló, usando método fallback...');
       const searchUrl = `https://www.googleapis.com/youtube/v3/search?key=${STREAMING_URLS.youtubeApiKey}&channelId=${STREAMING_URLS.youtubeChannelId}&part=snippet&type=video&order=date&maxResults=2`;
       
       const searchResponse = await fetch(searchUrl);
@@ -491,7 +478,6 @@ export const useYouTube = () => {
       }
 
       if (searchData.items && searchData.items.length > 0) {
-        console.log(`📹 Verificando ${searchData.items.length} videos recientes...`);
         
         // Solo verificar videos MUY recientes (última hora) o con keywords obvias
         for (const video of searchData.items) {
@@ -504,11 +490,9 @@ export const useYouTube = () => {
           const strongLiveKeywords = ['live', 'en vivo', 'directo', 'streaming ahora'];
           const hasStrongKeywords = strongLiveKeywords.some(keyword => title.includes(keyword));
           
-          console.log(`🎥 "${video.snippet.title}" - ${minutesAgo.toFixed(0)}min ago`);
           
           // Solo verificar si es MUY reciente O tiene keywords muy específicas
           if (minutesAgo <= 60 || hasStrongKeywords) {
-            console.log('🔍 Verificando este video...');
             
             const isReallyLive = await quickVerifyVideoIsLive(video.id.videoId);
             
@@ -521,13 +505,10 @@ export const useYouTube = () => {
                 isLive: true
               };
             }
-          } else {
-            console.log('⏭️ Demasiado viejo, saltando verificación');
-          }
+          } 
         }
       }
       
-      console.log('ℹ️ No se encontraron livestreams activos');
       return null;
 
     } catch (error) {
@@ -553,7 +534,6 @@ export const useYouTube = () => {
       
       if (data.items && data.items.length > 0) {
         const isLive = data.items[0].snippet.liveBroadcastContent === 'live';
-        console.log(`🔍 Video ${videoId} - Status: ${data.items[0].snippet.liveBroadcastContent}`);
         return isLive;
       }
       
@@ -578,10 +558,7 @@ export const useYouTube = () => {
     
     const canUse = !useRSSOnly && LIVE_CHECK_CONFIG.apiCallsCount < LIVE_CHECK_CONFIG.maxAPICallsPerHour;
     
-    if (!canUse && !useRSSOnly) {
-      console.log('⚠️ Límite de API alcanzado por hora');
-    }
-    
+ 
     return canUse;
   };
 
@@ -590,7 +567,7 @@ export const useYouTube = () => {
     LIVE_CHECK_CONFIG.apiCallsCount++;
     setApiCallsRemaining(LIVE_CHECK_CONFIG.maxAPICallsPerHour - LIVE_CHECK_CONFIG.apiCallsCount);
     setLastAPICall(new Date());
-    console.log(`📊 API calls usadas: ${LIVE_CHECK_CONFIG.apiCallsCount}/${LIVE_CHECK_CONFIG.maxAPICallsPerHour}`);
+    
   };
 
   // Función para actualización manual

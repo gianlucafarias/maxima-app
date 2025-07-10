@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import TrackPlayer, {
-    AppKilledPlaybackBehavior,
-    Capability,
-    Event,
-    State,
-    usePlaybackState,
-    useProgress,
-    useTrackPlayerEvents,
+  AppKilledPlaybackBehavior,
+  Capability,
+  Event,
+  State,
+  usePlaybackState,
+  useProgress,
+  useTrackPlayerEvents,
 } from 'react-native-track-player';
 
 interface RadioTrack {
@@ -49,7 +49,6 @@ export const useTrackPlayer = () => {
       }
 
       setIsInitializing(true);
-      console.log('🎵 Inicializando TrackPlayer...');
 
       try {
         // Verificar si TrackPlayer ya está configurado
@@ -57,15 +56,12 @@ export const useTrackPlayer = () => {
         try {
           await TrackPlayer.getPlaybackState();
           isAlreadySetup = true;
-          console.log('✅ TrackPlayer ya estaba configurado');
         } catch (error) {
-          console.log('🔧 TrackPlayer necesita configuración inicial');
         }
 
         // Solo configurar si no está ya configurado
         if (!isAlreadySetup) {
           await TrackPlayer.setupPlayer();
-          console.log('✅ TrackPlayer.setupPlayer() completado');
         }
 
         // Configurar opciones
@@ -90,9 +86,7 @@ export const useTrackPlayer = () => {
           progressUpdateEventInterval: 2,
         });
 
-        console.log('✅ TrackPlayer opciones configuradas');
         setIsPlayerReady(true);
-        console.log('✅ TrackPlayer listo para usar');
 
       } catch (error) {
         console.error('❌ Error inicializando TrackPlayer:', error);
@@ -108,7 +102,7 @@ export const useTrackPlayer = () => {
     return () => {
       if (isPlayerReady) {
         TrackPlayer.pause().catch((e) => {
-          console.log('Error pausing on cleanup:', e);
+          console.warn('Error pausing on cleanup:', e);
         });
       }
     };
@@ -117,12 +111,10 @@ export const useTrackPlayer = () => {
   // Add radio stream
   const addRadioStream = async (track: RadioTrack) => {
     if (!isPlayerReady) {
-      console.log('⚠️ Player no está listo para agregar stream');
       return;
     }
     
     try {
-      console.log('🎵 Agregando stream:', track.title);
       await TrackPlayer.reset();
       await TrackPlayer.add({
         id: track.id,
@@ -133,103 +125,18 @@ export const useTrackPlayer = () => {
         isLiveStream: true,
       });
       setCurrentTrack(track);
-      console.log('✅ Stream agregado correctamente');
     } catch (error) {
       console.error('❌ Error agregando stream:', error);
     }
   };
 
-  // Play
-  const play = async () => {
-    if (!isPlayerReady) {
-      console.log('⚠️ Player no está listo para reproducir');
-      return;
-    }
-    
-    try {
-      const queue = await TrackPlayer.getQueue();
-      if (queue.length === 0) {
-        console.log('⚠️ No hay tracks en la cola');
-        return;
-      }
-      
-      console.log('▶️ Iniciando reproducción');
-      await TrackPlayer.play();
-    } catch (error) {
-      console.error('❌ Error reproduciendo:', error);
-    }
-  };
-
-  // Pause
-  const pause = async () => {
-    if (!isPlayerReady) {
-      console.log('⚠️ Player no está listo para pausar');
-      return;
-    }
-    
-    try {
-      const queue = await TrackPlayer.getQueue();
-      if (queue.length === 0) {
-        console.log('⚠️ No hay tracks para pausar');
-        return;
-      }
-      
-      console.log('⏸️ Pausando reproducción');
-      await TrackPlayer.pause();
-    } catch (error) {
-      console.error('❌ Error pausando:', error);
-    }
-  };
-
-  // Stop
-  const stop = async () => {
-    if (!isPlayerReady) {
-      console.log('⚠️ Player no está listo para detener');
-      return;
-    }
-    
-    try {
-      const queue = await TrackPlayer.getQueue();
-      if (queue.length === 0) {
-        console.log('⚠️ No hay tracks para detener');
-        return;
-      }
-      
-      console.log('⏹️ Deteniendo reproducción');
-      await TrackPlayer.pause();
-      await TrackPlayer.seekTo(0);
-    } catch (error) {
-      console.error('❌ Error deteniendo:', error);
-    }
-  };
-
-  // Cleanup - Detener y limpiar completamente el player
-  const cleanup = async () => {
-    if (!isPlayerReady) {
-      console.log('⚠️ Player no está listo para cleanup');
-      return;
-    }
-    
-    try {
-      console.log('🧹 Limpiando TrackPlayer...');
-      await TrackPlayer.pause();
-      await TrackPlayer.reset(); // Limpiar la cola de reproducción
-      setCurrentTrack(null);
-      console.log('✅ TrackPlayer limpiado');
-    } catch (error) {
-      console.error('❌ Error en cleanup:', error);
-    }
-  };
-
   // Función simple para parar y resetear
   const stopAndReset = async () => {
-    try {
-      console.log('⏹️ Parando y reseteando player...');
+    try {  
       if (isPlayerReady) {
         await TrackPlayer.pause();
         await TrackPlayer.reset();
         setCurrentTrack(null);
-        console.log('✅ Player parado y reseteado');
       }
     } catch (error) {
       console.error('❌ Error en stopAndReset:', error);
@@ -239,22 +146,9 @@ export const useTrackPlayer = () => {
   // Toggle play/pause
   const togglePlayback = async () => {
     if (!isPlayerReady) {
-      console.log('⚠️ Player no está listo para toggle');
       return;
-    }
+    }    
     
-    const currentState = playbackState?.state;
-    console.log('🔄 Toggle playback, estado actual:', currentState);
-    
-    try {
-      if (currentState === State.Playing) {
-        await pause();
-      } else {
-        await play();
-      }
-    } catch (error) {
-      console.error('❌ Error en togglePlayback:', error);
-    }
   };
 
   return {
@@ -264,10 +158,6 @@ export const useTrackPlayer = () => {
     playbackState: playbackState?.state || State.None,
     progress,
     addRadioStream,
-    play,
-    pause,
-    stop,
-    cleanup,
     stopAndReset,
     togglePlayback,
     isPlaying: playbackState?.state === State.Playing,

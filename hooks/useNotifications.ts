@@ -169,7 +169,7 @@ export function useNotifications() {
 
       return token;
     } catch (error) {
-        console.log('❌ Error registrando para notificaciones:', error);
+        console.warn('❌ Error registrando para notificaciones:', error);
       return null;
     }
   }
@@ -204,7 +204,7 @@ export function useNotifications() {
       }
       */
     } catch (error) {
-      console.log('❌ Error enviando token al servidor:', error);
+      console.warn('❌ Error enviando token al servidor:', error);
     }
   }
 
@@ -217,23 +217,7 @@ export function useNotifications() {
       onNotificationReceived(data);
     }
     
-    // Lógica según el tipo de notificación
-    switch (data?.type) {
-      case 'live_stream':
-        console.log('🔴 Notificación de livestream recibida');
-        break;
-      case 'new_program':
-        console.log('📺 Notificación de nuevo programa');
-        break;
-      case 'breaking_news':
-        console.log('🚨 Notificación de última hora');
-        break;
-      case 'urgent':
-        console.log('⚠️ Notificación urgente');
-        break;
-      default:
-        console.log('📱 Notificación general');
-    }
+    
   }
 
   // Manejar cuando el usuario toca una notificación
@@ -245,20 +229,6 @@ export function useNotifications() {
       onNotificationPressed(data);
     }
     
-    // Navegación automática según el tipo
-    switch (data?.type) {
-      case 'live_stream':
-        console.log('🔴 Abriendo livestream desde notificación');
-        // El callback debe manejar cambiar a modo video y seleccionar el video
-        break;
-      case 'new_program':
-        console.log('📺 Navegando a programas desde notificación');
-        break;
-      case 'breaking_news':
-      case 'urgent':
-        console.log('🚨 Abriendo contenido urgente desde notificación');
-        break;
-    }
   }
 
   // Función para mostrar notificación local (para testing)
@@ -281,9 +251,8 @@ export function useNotifications() {
         trigger: { seconds: 1 },
       });
       
-      console.log('✅ Notificación local programada');
     } catch (error) {
-      console.log('❌ Error mostrando notificación local:', error);
+      console.warn('❌ Error mostrando notificación local:', error);
     }
   }
 

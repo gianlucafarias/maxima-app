@@ -28,15 +28,9 @@ export const useAudio = () => {
         },
       });
 
-      if (status === 'granted') {
-        console.log('✅ Permisos de notificaciones concedidos');
-      } else {
-        console.warn('⚠️ Permisos de notificaciones denegados');
-      }
-
       return status === 'granted';
     } catch (error) {
-      console.error('❌ Error solicitando permisos de notificaciones:', error);
+      console.warn('⚠️ Error solicitando permisos de notificaciones:', error);
       return false;
     }
   };
@@ -85,9 +79,7 @@ export const useAudio = () => {
     // Listener para cuando el usuario toca los botones de la notificación
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
       const action = response.actionIdentifier;
-      
-      console.log('🎵 Acción de notificación recibida:', action);
-      
+            
       switch (action) {
         case 'PLAY_ACTION':
           playMedia();
@@ -111,8 +103,6 @@ export const useAudio = () => {
   // Configurar sesión de audio con expo-av para controles nativos
   const setupAudioSession = async () => {
     try {
-      console.log('🔧 Configurando sesión de audio...');
-      
       // Configurar el modo de audio con expo-av
       await Audio.setAudioModeAsync({
         playsInSilentModeIOS: true,
@@ -122,19 +112,14 @@ export const useAudio = () => {
         staysActiveInBackground: true,
       });
 
-      console.log('✅ Sesión de audio configurada correctamente');
-      
     } catch (error) {
       console.error('❌ Error configurando sesión de audio:', error);
     }
   };
 
   const handleAppStateChange = (nextAppState: any) => {
-    console.log('📱 Cambio de estado de app:', appState, '->', nextAppState);
-    
     if (appState.match(/inactive|background/) && nextAppState === 'active') {
       // App vuelve a primer plano      
-      console.log('📱 App vuelve a primer plano');
       // Reconfigurar audio session por si se perdió
       setupAudioSession();
       
@@ -142,7 +127,6 @@ export const useAudio = () => {
       if (isPlaying && sound) {
         sound.getStatusAsync().then((status: AVPlaybackStatus) => {
           if (status.isLoaded && !status.isPlaying && isPlaying) {
-            console.log('🔄 Reiniciando reproducción...');
             sound.playAsync();
           }
         }).catch(error => {
@@ -150,9 +134,6 @@ export const useAudio = () => {
         });
       }
     } else if (appState === 'active' && nextAppState.match(/inactive|background/)) {
-      // App va a segundo plano
-      console.log('📱 App va a segundo plano');
-      
       if (isPlaying) {
         // Mostrar notificación de media controls cuando va a background
         updateMediaNotification(true);
@@ -179,10 +160,8 @@ export const useAudio = () => {
 
         // Configurar Now Playing Info usando expo-av
         // Nota: Esta funcionalidad puede requerir configuración nativa adicional
-        console.log('📱 Configurando Now Playing Info para iOS:', nowPlayingInfo);
       }
 
-      console.log('✅ Información de Now Playing configurada');
     } catch (error) {
       console.error('❌ Error configurando Now Playing Info:', error);
     }
@@ -224,7 +203,6 @@ export const useAudio = () => {
         identifier: 'MEDIA_PLAYER_NOTIFICATION', // ID único para actualizar la misma notificación
       });
 
-      console.log('✅ Notificación de media controls actualizada:', { playing, category: categoryIdentifier });
     } catch (error) {
       console.error('❌ Error actualizando notificación de media controls:', error);
     }
@@ -234,7 +212,6 @@ export const useAudio = () => {
   const clearMediaNotification = async () => {
     try {
       await Notifications.dismissNotificationAsync('MEDIA_PLAYER_NOTIFICATION');
-      console.log('✅ Notificación de media controls limpiada');
     } catch (error) {
       console.error('❌ Error limpiando notificación:', error);
     }
@@ -243,7 +220,6 @@ export const useAudio = () => {
   const playMedia = async () => {
     try {
       setIsLoading(true);
-      console.log('▶️ Iniciando reproducción...');
       
       // Asegurar que la sesión de audio esté configurada correctamente
       await setupAudioSession();
@@ -273,8 +249,6 @@ export const useAudio = () => {
       setSound(newSound);
       setIsPlaying(true);
       setIsLoading(false);
-
-      console.log('✅ Reproducción iniciada');
 
       // Configurar información de Now Playing para controles nativos
       await setupNowPlayingInfo(true);
@@ -315,8 +289,6 @@ export const useAudio = () => {
 
   const stopMedia = async () => {
     try {
-      console.log('⏸️ Deteniendo reproducción...');
-      
       if (sound) {
         await sound.pauseAsync();
         
@@ -328,7 +300,6 @@ export const useAudio = () => {
       }
       
       setIsPlaying(false);
-      console.log('✅ Reproducción detenida');
     } catch (error) {
       console.error('❌ Error stopping media:', error);
     }
@@ -349,7 +320,6 @@ export const useAudio = () => {
         setSound(null);
       }
       await clearMediaNotification();
-      console.log('✅ Limpieza de audio completada');
     } catch (error) {
       console.error('❌ Error en limpieza:', error);
     }

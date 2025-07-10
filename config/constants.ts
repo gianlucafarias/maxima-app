@@ -50,7 +50,7 @@ export const LIVE_CHECK_CONFIG = {
 export const STREAMING_URLS = {
   radioStream: process.env.EXPO_PUBLIC_RADIO_STREAM || 'https://emisora.radiosplay.com.ar/8014/stream/',
   twitchChannel: process.env.EXPO_PUBLIC_TWITCH_CHANNEL || 'lamaxmaxima',
-  youtubeChannelId: process.env.EXPO_PUBLIC_YsOUTUBE_CHANNEL_ID || 'UCBy5F5apvBB_Yp4Vcbwkipw',
+  youtubeChannelId: process.env.EXPO_PUBLIC_YOUTUBE_CHANNEL_ID || 'UCBy5F5apvBB_Yp4Vcbwkipw',
   youtubeApiKey: process.env.EXPO_PUBLIC_YOUTUBE_API_KEY
 };
 
