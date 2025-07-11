@@ -375,16 +375,21 @@ export const useYouTube = () => {
             const title = titleMatch[1];
             const published = publishedMatch ? new Date(publishedMatch[1]) : new Date();
             
-            // Verificar si es muy reciente o tiene keywords de live
+            // Verificar si es muy reciente o tiene keywords de live (más permisivo)
             const now = new Date();
             const timeDiff = now.getTime() - published.getTime();
             const hoursAgo = timeDiff / (1000 * 60 * 60);
             
-            const liveKeywords = ['live', 'directo', 'vivo', 'transmisión', 'streaming'];
+            const liveKeywords = [
+              'live', 'directo', 'vivo', 'transmisión', 'streaming', 
+              'en vivo', 'ahora', 'radio', 'programa', 'show',
+              'máxima', 'fm', 'emisión', 'aire'
+            ];
             const titleLower = title.toLowerCase();
             const hasLiveKeywords = liveKeywords.some(keyword => titleLower.includes(keyword));
             
-            if (hoursAgo <= 2 || hasLiveKeywords) {
+            // Más permisivo: hasta 12 horas o cualquier keyword
+            if (hoursAgo <= 12 || hasLiveKeywords) {
               return {
                 videoId: videoId,
                 title: title,
@@ -408,15 +413,15 @@ export const useYouTube = () => {
   const checkLiveStreamViaAPI = async (): Promise<any> => {
     // Verificar que tengamos API key
     if (!STREAMING_URLS.youtubeApiKey) {
-      console.error('❌ YouTube API Key no configurada');
-      console.warn('💡 Configura EXPO_PUBLIC_YOUTUBE_API_KEY en tu .env');
-      throw new Error('YouTube API Key not configured');
+      console.warn('⚠️ YouTube API Key no configurada - usando solo RSS');
+      setUseRSSOnly(true);
+      return null;
     }
 
     if (!STREAMING_URLS.youtubeChannelId) {
-      console.error('❌ YouTube Channel ID no configurado');
-      console.warn('💡 Configura EXPO_PUBLIC_YOUTUBE_CHANNEL_ID en tu .env');
-      throw new Error('YouTube Channel ID not configured');
+      console.warn('⚠️ YouTube Channel ID no configurado - usando solo RSS');
+      setUseRSSOnly(true);
+      return null;
     }
 
 
@@ -486,13 +491,16 @@ export const useYouTube = () => {
           const now = new Date();
           const minutesAgo = (now.getTime() - publishTime.getTime()) / (1000 * 60);
           
-          // Keywords más específicas para livestreams
-          const strongLiveKeywords = ['live', 'en vivo', 'directo', 'streaming ahora'];
-          const hasStrongKeywords = strongLiveKeywords.some(keyword => title.includes(keyword));
+          // Keywords más amplias para livestreams
+          const liveKeywords = [
+            'live', 'en vivo', 'directo', 'streaming', 'transmisión',
+            'radio', 'programa', 'show', 'máxima', 'fm', 'emisión'
+          ];
+          const hasLiveKeywords = liveKeywords.some(keyword => title.includes(keyword));
           
           
-          // Solo verificar si es MUY reciente O tiene keywords muy específicas
-          if (minutesAgo <= 60 || hasStrongKeywords) {
+          // Más permisivo: hasta 6 horas O cualquier keyword de live
+          if (minutesAgo <= 360 || hasLiveKeywords) {
             
             const isReallyLive = await quickVerifyVideoIsLive(video.id.videoId);
             

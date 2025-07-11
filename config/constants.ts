@@ -43,7 +43,7 @@ export const LIVE_CHECK_CONFIG = {
   cacheAPIResults: true, // Cachear resultados de API
   apiCallsCount: 0, // Contador de llamadas por hora
   lastAPIReset: Date.now(), // Último reset del contador
-  cacheMinutes: 5, // Cachear resultados por 5 minutos para evitar llamadas duplicadas
+  cacheMinutes: 2, // Cachear resultados por 2 minutos para detectar directos más rápido
 };
 
 // URLs de streamings

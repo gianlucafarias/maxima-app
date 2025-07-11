@@ -31,7 +31,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
 }
 expoAutolinking.useExpoModules()
 
-rootProject.name = 'La Max 95.5 APP'
+rootProject.name = 'La Max Stream Radio'
 
 expoAutolinking.useExpoVersionCatalog()
 

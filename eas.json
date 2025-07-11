@@ -1,4 +1,8 @@
 {
+  "cli": {
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
+  },
   "build": {
     "development": {
       "developmentClient": true,
@@ -14,6 +18,18 @@
       "distribution": "internal"
     },
     "production": {
+      "env": {
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "from-secret",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "from-secret",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "from-secret",
+        "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "from-secret",
+        "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "from-secret",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "from-secret",
+        "EXPO_PUBLIC_YOUTUBE_API_KEY": "from-secret",
+        "EXPO_PUBLIC_YOUTUBE_CHANNEL_ID": "from-secret",
+        "EXPO_PUBLIC_RADIO_STREAM": "from-secret",
+        "EXPO_PUBLIC_TWITCH_CHANNEL": "from-secret"
+      },
       "ios": {
         "resourceClass": "m-medium"
       },
@@ -30,8 +46,5 @@
         "buildConfiguration": "Release"
       }
     }
-  },
-  "cli": {
-    "promptToConfigurePushNotifications": false
   }
 } 

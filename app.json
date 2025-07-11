@@ -8,9 +8,7 @@
     "scheme": "la-max-955-app",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
-    "privacy": "public",
     "description": "La Max Stream Radio 95.5 FM - Escuchá en vivo desde Ceres, Santa Fe. Música, noticias y programas en directo.",
-    "keywords": ["radio", "la max", "95.5", "ceres", "santa fe", "música", "noticias", "maxima fm", "maxima fm 95.5", "ceres santa fe argentina", "ceres ciudad"],
     "notification": {
       "icon": "./assets/images/icon.png",
       "color": "#6c5ce7",
@@ -73,8 +71,8 @@
           "android": {
             "enableProguardInReleaseBuilds": true,
             "enableShrinkResourcesInReleaseBuilds": true,
-            "compileSdkVersion": 34,
-            "targetSdkVersion": 34
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35
           }
         }
       ],

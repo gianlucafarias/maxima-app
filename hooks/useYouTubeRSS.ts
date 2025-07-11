@@ -10,7 +10,11 @@ export interface YouTubeVideo {
   creator: string;
 }
 
-const RSS_URL = 'https://fetchrss.com/feed/aGW_KQCYrq9DaGW_FDJ_Lv0y.rss';
+// URLs de respaldo para RSS
+const RSS_URLS = [
+  'https://fetchrss.com/feed/aGW_KQCYrq9DaGW_FDJ_Lv0y.rss',
+  `https://www.youtube.com/feeds/videos.xml?channel_id=UCBy5F5apvBB_Yp4Vcbwkipw`
+];
 const CACHE_KEY = 'youtube_rss_videos';
 const CACHE_TIMESTAMP_KEY = 'youtube_rss_timestamp';
 const CACHE_DURATION = 15 * 60 * 1000; // 15 minutos en milisegundos
@@ -84,13 +88,52 @@ export const useYouTubeRSS = () => {
     }
   };
 
-  // Función para parsear el RSS XML
+  // Función para parsear el RSS XML (soporta RSS estándar y XML de YouTube)
   const parseRSSXML = (xmlText: string): YouTubeVideo[] => {
     const videos: YouTubeVideo[] = [];
 
     try {
       
-      // Buscar todos los items
+      // Verificar si es RSS de YouTube (formato XML)
+      const isYouTubeXML = xmlText.includes('<entry>') && xmlText.includes('<yt:videoId>');
+      
+      if (isYouTubeXML) {
+        // Parsear formato XML de YouTube
+        const entryMatches = xmlText.match(/<entry>[\s\S]*?<\/entry>/g);
+        
+        if (entryMatches) {
+          entryMatches.forEach((entry, index) => {
+            try {
+              const titleMatch = entry.match(/<title>(.*?)<\/title>/);
+              const videoIdMatch = entry.match(/<yt:videoId>(.*?)<\/yt:videoId>/);
+              const publishedMatch = entry.match(/<published>(.*?)<\/published>/);
+              const authorMatch = entry.match(/<name>(.*?)<\/name>/);
+              
+              if (titleMatch && videoIdMatch) {
+                const videoId = videoIdMatch[1];
+                const title = titleMatch[1];
+                const published = publishedMatch ? publishedMatch[1] : new Date().toISOString();
+                const creator = authorMatch ? authorMatch[1] : 'Máxima FM';
+                
+                videos.push({
+                  id: videoId,
+                  title,
+                  link: `https://www.youtube.com/watch?v=${videoId}`,
+                  thumbnail: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
+                  publishDate: formatDate(published),
+                  creator
+                });
+              }
+            } catch (entryError) {
+              console.warn(`⚠️ Error parseando entry ${index + 1}:`, entryError);
+            }
+          });
+        }
+        
+        return videos.slice(0, 5);
+      }
+      
+      // Parsear RSS estándar (fetchrss.com)
       const itemMatches = xmlText.match(/<item>[\s\S]*?<\/item>/g);
       
       if (itemMatches) {
@@ -225,21 +268,38 @@ export const useYouTubeRSS = () => {
         }
       }
 
-      const response = await fetch(RSS_URL);
+      // Probar múltiples URLs de RSS
+      let success = false;
+      
+      for (const RSS_URL of RSS_URLS) {
+        try {
+          console.log(`📡 Probando RSS: ${RSS_URL}`);
+          const response = await fetch(RSS_URL);
 
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
+          if (!response.ok) {
+            console.warn(`❌ RSS falló: ${response.status}`);
+            continue;
+          }
+
+          const xmlText = await response.text();
+          const parsedVideos = parseRSSXML(xmlText);
+
+          if (parsedVideos.length > 0) {
+            setVideos(parsedVideos);
+            await saveToCache(parsedVideos);
+            setLastUpdate(new Date());
+            success = true;
+            console.log(`✅ RSS exitoso: ${parsedVideos.length} videos`);
+            break;
+          }
+        } catch (rssError) {
+          console.warn(`❌ Error con RSS ${RSS_URL}:`, rssError);
+          continue;
+        }
       }
 
-      const xmlText = await response.text();
-      const parsedVideos = parseRSSXML(xmlText);
-
-      if (parsedVideos.length > 0) {
-        setVideos(parsedVideos);
-        await saveToCache(parsedVideos);
-        setLastUpdate(new Date());
-      } else {
-        throw new Error('No se encontraron videos en el RSS');
+      if (!success) {
+        throw new Error('Todos los RSS fallaron');
       }
 
     } catch (error) {

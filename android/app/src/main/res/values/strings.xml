@@ -1,9 +1,6 @@
 <resources>
-  <string name="app_name">La Max 95.5 APP</string>
+  <string name="app_name">La Max Stream Radio</string>
   <string name="expo_system_ui_user_interface_style" translatable="false">automatic</string>
   <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
   <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
-  <string name="rntp_temporary_channel_id">maxima_radio_channel</string>
-  <string name="rntp_temporary_channel_name">Máxima FM Radio</string>
-  <string name="playback_channel_name">Máxima FM Player</string>
 </resources>

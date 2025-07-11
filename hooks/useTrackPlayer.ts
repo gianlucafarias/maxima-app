@@ -147,8 +147,19 @@ export const useTrackPlayer = () => {
   const togglePlayback = async () => {
     if (!isPlayerReady) {
       return;
-    }    
+    }
     
+    try {
+      const state = playbackState?.state;
+      
+      if (state === State.Playing) {
+        await TrackPlayer.pause();
+      } else if (state === State.Paused || state === State.Stopped || state === State.Ready) {
+        await TrackPlayer.play();
+      }
+    } catch (error) {
+      console.error('❌ Error en togglePlayback:', error);
+    }
   };
 
   return {
