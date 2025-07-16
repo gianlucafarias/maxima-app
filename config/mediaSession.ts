@@ -101,3 +101,40 @@ export const initializeMediaSession = async () => {
     console.error('❌ Error inicializando sistema de media:', error);
   }
 }; 
+
+// Función para limpiar todas las notificaciones de media
+export const clearAllMediaNotifications = async () => {
+  try {
+    // Cancelar todas las notificaciones programadas relacionadas con media
+    await Notifications.cancelAllScheduledNotificationsAsync();
+    
+    // Descartar todas las notificaciones presentadas relacionadas con media
+    const presentedNotifications = await Notifications.getPresentedNotificationsAsync();
+    
+    for (const notification of presentedNotifications) {
+      const notificationType = notification.request.content.data?.type;
+      if (typeof notificationType === 'string' && notificationType.includes('media')) {
+        await Notifications.dismissNotificationAsync(notification.request.identifier);
+      }
+    }
+    
+    console.log('✅ Notificaciones de media limpiadas');
+  } catch (error) {
+    console.error('❌ Error limpiando notificaciones de media:', error);
+  }
+};
+
+// Función para verificar si hay notificaciones de media activas
+export const hasActiveMediaNotifications = async (): Promise<boolean> => {
+  try {
+    const presentedNotifications = await Notifications.getPresentedNotificationsAsync();
+    
+    return presentedNotifications.some(notification => {
+      const notificationType = notification.request.content.data?.type;
+      return typeof notificationType === 'string' && notificationType.includes('media');
+    });
+  } catch (error) {
+    console.error('❌ Error verificando notificaciones activas:', error);
+    return false;
+  }
+}; 

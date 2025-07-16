@@ -1,8 +1,8 @@
 // index.js - Punto de entrada con Track Player y Firebase Messaging
 import messaging from '@react-native-firebase/messaging';
 import 'expo-router/entry';
-import TrackPlayer from 'react-native-track-player';
-import PlaybackService from './service';
+// Importar configuración de TrackPlayer (esto registra automáticamente el servicio)
+import './config/trackPlayerSetup';
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   
@@ -17,7 +17,5 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
   }
 });
 
-
-// Registrar el servicio de Track Player
-TrackPlayer.registerPlaybackService(() => PlaybackService);
+console.log('🚀 App iniciada - TrackPlayer configurado');
 

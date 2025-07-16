@@ -4,22 +4,22 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function InfoScreen() {
   const programas = [
     {
       id: 1,
-      nombre: "Máxima Primera Mañana",
-      horario: "06:00 - 90:00",
-      descripcion: "Empieza tu día con la mejor música y noticias",
+      nombre: "De Mañana Es Mejor",
+      horario: "07:00 - 90:00",
+      descripcion: "Empezá tu día con la mejor música y noticias",
       icon: "sunny-outline"
     },
     {
       id: 2,
       nombre: "Bunker Radio de Mañana",
-      horario: "09:00 - 13:00",
-      descripcion: "Los grandes éxitos del rock de todos los tiempos",
+      horario: "09:00 - 12:00",
+      descripcion: "Martin Farias y equipo hacen la mañana de la radio.",
       icon: "musical-notes-outline"
     },
     {
@@ -32,8 +32,8 @@ export default function InfoScreen() {
     {
       id: 4,
       nombre: "El Cofre",
-      horario: "20:00 - 00:00",
-      descripcion: "Los hits más populares para cerrar el día",
+      horario: "18:00 - 21:00",
+      descripcion: "Los clásicos de la max.",
       icon: "moon-outline"
     }
   ];
@@ -41,17 +41,12 @@ export default function InfoScreen() {
   const contactInfo = [
     {
       type: "Teléfono",
-      value: "+1 (555) 123-4567",
+      value: "+54 (3491) 416237",
       icon: "call-outline"
     },
     {
-      type: "Email",
-      value: "info@radiomaximafm.com",
-      icon: "mail-outline"
-    },
-    {
       type: "Dirección",
-      value: "123 Radio Street, Ciudad",
+      value: "Tristán Malbran 426 Ceres, Santa Fe",
       icon: "location-outline"
     }
   ];
@@ -83,7 +78,7 @@ export default function InfoScreen() {
           <View style={styles.rightSpacer} />
         </View>
 
-        {/* About Section */}
+        {/* About Section
         <View style={styles.section}>
           <LinearGradient
             colors={['rgba(108, 92, 231, 0.2)', 'rgba(162, 155, 254, 0.1)']}
@@ -97,7 +92,7 @@ export default function InfoScreen() {
             </Text>
           </LinearGradient>
         </View>
-
+ */}
         {/* Programs Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Programación</Text>
@@ -143,16 +138,16 @@ export default function InfoScreen() {
           <Text style={styles.sectionTitle}>Seguinos</Text>
           <View style={styles.socialContainer}>
             <TouchableOpacity style={styles.socialButton}>
-              <Ionicons name="logo-facebook" size={30} color="#4267B2" />
+              <Ionicons name="logo-facebook" size={30} color="#4267B2" onPress={() => Linking.openURL('https://www.facebook.com/MaxStreamRadio')} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.socialButton}>
-              <Ionicons name="logo-instagram" size={30} color="#E4405F" />
+              <Ionicons name="logo-instagram" size={30} color="#E4405F" onPress={() => Linking.openURL('https://www.instagram.com/lamaxmaxima/')} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.socialButton}>
-              <Ionicons name="logo-twitter" size={30} color="#1DA1F2" />
+              <Ionicons name="logo-twitter" size={30} color="#1DA1F2" onPress={() => Linking.openURL('https://x.com/LaMaxMaxima')} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.socialButton}>
-              <Ionicons name="logo-youtube" size={30} color="#FF0000" />
+              <Ionicons name="logo-youtube" size={30} color="#FF0000" onPress={() => Linking.openURL('https://www.youtube.com/@maximafm955ceres')} />
             </TouchableOpacity>
           </View>
         </View>
