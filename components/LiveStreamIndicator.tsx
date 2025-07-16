@@ -34,7 +34,7 @@ export const LiveStreamIndicator: React.FC<LiveStreamIndicatorProps> = ({
       <TouchableOpacity style={styles.audioContainer} onPress={onPress}>
         <View style={styles.audioContent}>
           <Text style={styles.audioTitle}>
-            🔴 DIRECTO DISPONIBLE
+            🔴 EN VIVO
           </Text>
           <Text style={styles.liveTitle} numberOfLines={1}>
             {liveStream.title}

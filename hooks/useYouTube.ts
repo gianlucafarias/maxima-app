@@ -297,20 +297,27 @@ export const useYouTube = () => {
 
   // Función principal optimizada para verificar livestreams
   const checkForLiveStreamsAndReturn = async (): Promise<any> => {
-    if (checkingLive) return liveStream;
+    if (checkingLive) {
+      console.log('🔄 Ya hay una verificación de livestreams en progreso...');
+      return liveStream;
+    }
     
+    console.log('🚀 INICIANDO verificación de livestreams...');
     setCheckingLive(true);
     
     try {
       // 🚀 OPTIMIZACIÓN 1: Usar caché si es reciente
       if (canUseLiveCache()) {
+        console.log('💾 Usando resultado desde caché...');
         setLiveStream(cachedLiveResult);
         setCheckingLive(false);
         return cachedLiveResult;
       }
 
+      console.log('🎯 Verificando vía RSS (método principal, sin cuota)...');
       const rssResult = await checkLiveStreamViaRSS();
       if (rssResult) {
+        console.log('✅ LIVESTREAM ENCONTRADO via RSS!');
         setLiveStream(rssResult);
         setCachedLiveResult(rssResult);
         setLastLiveCheck(new Date());
@@ -318,7 +325,9 @@ export const useYouTube = () => {
       }
 
       // 🚀 OPTIMIZACIÓN 2: Solo usar API si realmente necesitamos
+      console.log('🔑 RSS no encontró livestreams, verificando disponibilidad de API...');
       if (canUseAPI()) {
+        console.log('✅ API disponible, haciendo verificación via API...');
         incrementAPICall();
         
         const apiResult = await checkLiveStreamViaAPI();
@@ -328,13 +337,16 @@ export const useYouTube = () => {
         setLastLiveCheck(new Date());
         
         if (apiResult) {
+          console.log('✅ LIVESTREAM ENCONTRADO via API!');
           setLiveStream(apiResult);
           return apiResult;
         } else {
+          console.log('ℹ️ API confirmó: No hay livestreams activos');
           setLiveStream(null);
           return null;
         }
       } else {
+        console.log('❌ API no disponible (cuota agotada o deshabilitada)');
         setLiveStream(null);
         return null;
       }
@@ -345,6 +357,7 @@ export const useYouTube = () => {
       return null;
     } finally {
       setCheckingLive(false);
+      console.log('🏁 Verificación de livestreams completada');
     }
   };
 
@@ -352,6 +365,7 @@ export const useYouTube = () => {
   const checkLiveStreamViaRSS = async (): Promise<any> => {
     try {
       const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${STREAMING_URLS.youtubeChannelId}`;
+      console.log('🔍 Verificando RSS de YouTube...');
       
       const response = await fetch(rssUrl);
       if (!response.ok) {
@@ -359,11 +373,15 @@ export const useYouTube = () => {
       }
       
       const xmlText = await response.text();
+      console.log('✅ RSS obtenido correctamente, parseando videos...');
+      
       const videoMatches = xmlText.match(/<entry>[\s\S]*?<\/entry>/g);
       
       if (videoMatches && videoMatches.length > 0) {
-        // Revisar los 2 videos más recientes
-        for (let i = 0; i < Math.min(2, videoMatches.length); i++) {
+        console.log(`📹 Encontrados ${videoMatches.length} videos en RSS, revisando los 3 más recientes...`);
+        
+        // Revisar los 3 videos más recientes (aumentado de 2)
+        for (let i = 0; i < Math.min(3, videoMatches.length); i++) {
           const video = videoMatches[i];
           
           const videoIdMatch = video.match(/<yt:videoId>(.*?)<\/yt:videoId>/);
@@ -383,13 +401,18 @@ export const useYouTube = () => {
             const liveKeywords = [
               'live', 'directo', 'vivo', 'transmisión', 'streaming', 
               'en vivo', 'ahora', 'radio', 'programa', 'show',
-              'máxima', 'fm', 'emisión', 'aire'
+              'máxima', 'fm', 'emisión', 'aire', 'stream', 'bunker'
             ];
             const titleLower = title.toLowerCase();
             const hasLiveKeywords = liveKeywords.some(keyword => titleLower.includes(keyword));
             
-            // Más permisivo: hasta 12 horas o cualquier keyword
-            if (hoursAgo <= 12 || hasLiveKeywords) {
+            console.log(`📺 Video ${i + 1}: "${title}"`);
+            console.log(`⏰ Publicado hace ${hoursAgo.toFixed(1)} horas`);
+            console.log(`🏷️ Tiene keywords de live: ${hasLiveKeywords}`);
+            
+            // Más permisivo: hasta 24 horas o cualquier keyword (aumentado de 12)
+            if (hoursAgo <= 24 || hasLiveKeywords) {
+              console.log('✅ LIVESTREAM DETECTADO via RSS:', title);
               return {
                 videoId: videoId,
                 title: title,
@@ -400,6 +423,10 @@ export const useYouTube = () => {
             }
           }
         }
+        
+        console.log('ℹ️ No se detectaron livestreams en los videos más recientes');
+      } else {
+        console.log('ℹ️ No se encontraron videos en el RSS');
       }
       
       return null;
@@ -414,15 +441,20 @@ export const useYouTube = () => {
     // Verificar que tengamos API key
     if (!STREAMING_URLS.youtubeApiKey) {
       console.warn('⚠️ YouTube API Key no configurada - usando solo RSS');
+      console.warn('🔍 API Key actual:', STREAMING_URLS.youtubeApiKey);
       setUseRSSOnly(true);
       return null;
     }
 
     if (!STREAMING_URLS.youtubeChannelId) {
       console.warn('⚠️ YouTube Channel ID no configurado - usando solo RSS');
+      console.warn('🔍 Channel ID actual:', STREAMING_URLS.youtubeChannelId);
       setUseRSSOnly(true);
       return null;
     }
+
+    console.log('🔑 YouTube API configurada correctamente');
+    console.log('🆔 Channel ID:', STREAMING_URLS.youtubeChannelId);
 
 
     try {

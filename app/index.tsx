@@ -72,7 +72,7 @@ export default function RadioScreen() {
   // Referencia para el TrackPlayerRadio
   const trackPlayerRadioRef = useRef<TrackPlayerRadioRef | null>(null);
 
-  // Cargar datos iniciales (solo cache, sin API)
+  // Cargar datos iniciales y verificar livestreams
   useEffect(() => {
     loadInitialData(); // Solo carga desde cache si existe
     updateManualCountDisplay(); // Actualizar contador de actualizaciones
@@ -80,6 +80,21 @@ export default function RadioScreen() {
     setupNotificationCallbacks();
     // Suscribirse a topics de Firebase
     setupFirebaseTopics();
+    
+    // 🚀 NUEVA FUNCIONALIDAD: Verificar livestreams al cargar la app
+    const checkInitialLiveStreams = async () => {
+      try {
+        console.log('🔍 Verificación inicial de livestreams...');
+        await checkForLiveStreams();
+      } catch (error) {
+        console.error('❌ Error en verificación inicial de livestreams:', error);
+      }
+    };
+    
+    // Ejecutar después de un pequeño delay para que la app termine de cargar
+    const timer = setTimeout(checkInitialLiveStreams, 2000);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   // Configurar los callbacks para manejar notificaciones Firebase
@@ -155,6 +170,27 @@ export default function RadioScreen() {
     }
     
     setIsVideoMode(newVideoMode);
+    
+    // verificar livestreams cuando se entra a modo video
+    if (newVideoMode) {
+      console.log('🔍 Cambiando a modo video - verificando livestreams de YouTube...');
+      try {
+        const liveResult = await checkForLiveStreamsAndReturn();
+        if (liveResult) {
+          console.log('✅ Livestream encontrado:', liveResult.title);
+          // Automáticamente cambiar al livestream detectado
+          setSelectedVideoId(liveResult.videoId);
+        } else {
+          console.log('ℹ️ No hay livestreams activos - mostrando Twitch por defecto');
+          // Asegurar que no hay video seleccionado para mostrar Twitch
+          setSelectedVideoId(null);
+        }
+      } catch (error) {
+        console.error('❌ Error verificando livestreams al cambiar a modo video:', error);
+        // En caso de error, mostrar Twitch por defecto
+        setSelectedVideoId(null);
+      }
+    }
   };
 
   const openInfo = () => {
