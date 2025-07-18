@@ -3,14 +3,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Linking,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Alert,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
 interface NewsSectionProps {
@@ -110,15 +110,15 @@ const NewsSection: React.FC<NewsSectionProps> = ({
       
 
       {/* Loading indicator */}
-      {loading && news.length === 0 && (
+      {loading && news.length === 0 ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#a29bfe" />
           <Text style={styles.loadingText}>Cargando noticias...</Text>
         </View>
-      )}
+      ) : null}
 
       {/* Lista de noticias */}
-      {news.length > 0 && (
+      {news.length > 0 ? (
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false}
@@ -166,10 +166,10 @@ const NewsSection: React.FC<NewsSectionProps> = ({
             </TouchableOpacity>
           ))}
         </ScrollView>
-      )}
+      ) : null}
 
       {/* Estado vacío */}
-      {!loading && news.length === 0 && (
+      {!loading && news.length === 0 ? (
         <View style={styles.emptyState}>
           <Ionicons name="newspaper-outline" size={48} color="#666" />
           <Text style={styles.emptyText}>No hay noticias disponibles</Text>
@@ -177,7 +177,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({
             <Text style={styles.retryText}>Intentar nuevamente</Text>
           </TouchableOpacity>
         </View>
-      )}
+      ) : null}
     </View>
   );
 };

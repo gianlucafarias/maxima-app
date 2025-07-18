@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import TrackPlayer, {
-  AppKilledPlaybackBehavior,
-  Capability,
-  Event,
-  State,
-  usePlaybackState,
-  useTrackPlayerEvents,
+    AppKilledPlaybackBehavior,
+    Capability,
+    Event,
+    State,
+    usePlaybackState,
+    useTrackPlayerEvents,
 } from 'react-native-track-player';
 import { isTrackPlayerServiceRegistered } from '../config/trackPlayerSetup';
 
@@ -73,10 +73,12 @@ export const useTrackPlayer = () => {
           console.log('✅ TrackPlayer configurado');
         }
 
-        // Configurar opciones básicas
+        // Configurar opciones básicas con deep linking habilitado
         await TrackPlayer.updateOptions({
           android: {
             appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
+            // Configurar intent para deep linking en Android
+            alwaysPauseOnInterruption: false,
           },
           capabilities: [
             Capability.Play,
@@ -88,6 +90,12 @@ export const useTrackPlayer = () => {
             Capability.Pause,
           ],
           progressUpdateEventInterval: 2,
+          // Configurar deep linking para notificaciones
+          notificationCapabilities: [
+            Capability.Play,
+            Capability.Pause,
+            Capability.Stop,
+          ],
         });
 
         console.log('✅ TrackPlayer inicializado correctamente');

@@ -236,15 +236,15 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
       </Text>
 
       {/* Loading indicator */}
-      {loading && videos.length === 0 && (
+      {loading && videos.length === 0 ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#ff4757" />
           <Text style={styles.loadingText}>Cargando videos...</Text>
         </View>
-      )}
+      ) : null}
 
       {/* Lista de videos */}
-      {videos.length > 0 && (
+      {videos.length > 0 ? (
         <>
           <ScrollView 
             horizontal 
@@ -323,10 +323,10 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
             </LinearGradient>
           </TouchableOpacity>
         </>
-      )}
+      ) : null}
 
       {/* Estado vacío */}
-      {!loading && videos.length === 0 && (
+      {!loading && videos.length === 0 ? (
         <View style={styles.emptyState}>
           <Ionicons name="logo-youtube" size={48} color="#666" />
           <Text style={styles.emptyText}>No hay videos disponibles</Text>
@@ -334,7 +334,7 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
             <Text style={styles.retryText}>Intentar nuevamente</Text>
           </TouchableOpacity>
         </View>
-      )}
+      ) : null}
     </View>
   );
 };

@@ -1,10 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Linking from 'expo-linking';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
-import { Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 // Importaciones de componentes separados
 import { LiveStreamIndicator } from '@/components/LiveStreamIndicator';
@@ -25,29 +25,46 @@ import { useYouTubeRSS } from '@/hooks/useYouTubeRSS';
 import { STREAMING_URLS } from '@/config/constants';
 import { styles } from '@/styles/RadioScreen.styles';
 
-const { width, height } = Dimensions.get('window');
 
 export default function RadioScreen() {
   // Estados locales
   const [isVideoMode, setIsVideoMode] = useState(false);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
-  const [scrollY, setScrollY] = useState(0);
+  const router = useRouter();
+
+  const openInfo = () => {
+    console.log('🔍 Botón info presionado - intentando navegar a info');
+    console.log('🔍 Router object:', router);
+    console.log('🔍 Router available methods:', Object.keys(router));
+    
+    try {
+      console.log('🔍 Antes de router.push');
+      router.push('/info');
+      console.log('✅ router.push ejecutado - navegación a info');
+      
+      // Verificar después de un delay
+      setTimeout(() => {
+        console.log('🔍 Verificando navegación después de 500ms');
+      }, 500);
+    } catch (error) {
+      console.error('❌ Error navegando a info:', error);
+      if (error instanceof Error) {
+        console.error('❌ Error stack:', error.stack);
+      }
+    }
+  };
 
   const { 
     liveStream,
-    checkingLive,
     loadInitialData,
     updateManualCountDisplay,
-    checkForLiveStreams,
     checkForLiveStreamsAndReturn,
     setLiveStream,
   } = useYouTube();
 
   // Hook de notificaciones Firebase
   const {
-    fcmToken,
     isPermissionGranted,
-    lastNotification,
     setOnNotificationReceived,
     setOnNotificationPressed,
     subscribeToTopic,
@@ -81,7 +98,7 @@ export default function RadioScreen() {
     // Suscribirse a topics de Firebase
     setupFirebaseTopics();
     
-    // 🚀 NUEVA FUNCIONALIDAD: Verificar livestreams al cargar la app
+    /* 🚀 NUEVA FUNCIONALIDAD: Verificar livestreams al cargar la app
     const checkInitialLiveStreams = async () => {
       try {
         console.log('🔍 Verificación inicial de livestreams...');
@@ -90,11 +107,12 @@ export default function RadioScreen() {
         console.error('❌ Error en verificación inicial de livestreams:', error);
       }
     };
+
     
     // Ejecutar después de un pequeño delay para que la app termine de cargar
     const timer = setTimeout(checkInitialLiveStreams, 2000);
-    
-    return () => clearTimeout(timer);
+   */ 
+    //return () => clearTimeout(timer);
   }, []);
 
   // Configurar los callbacks para manejar notificaciones Firebase
@@ -193,28 +211,9 @@ export default function RadioScreen() {
     }
   };
 
-  const openInfo = () => {
-    router.push('/info');
-  };
-
-  const handleVideoPress = (videoId: string) => {
-    setSelectedVideoId(videoId);
-    setIsVideoMode(true);
-  };
 
   const handleBackToLive = () => {
     setSelectedVideoId(null);
-  };
-
-  // Handler para el scroll
-  const handleScroll = (event: any) => {
-    const currentScrollY = event.nativeEvent.contentOffset.y;
-    setScrollY(currentScrollY);
-  };
-
-  // Función para verificar livestreams manualmente
-  const handleCheckLiveStreams = () => {
-    checkForLiveStreams();
   };
 
   // Función para iniciar livestream
@@ -258,16 +257,17 @@ export default function RadioScreen() {
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
-        onScroll={handleScroll}
         scrollEventThrottle={16}
       >
         {/* Logo Header */}
         <View style={styles.logoContainer}>
           <View style={styles.leftSpacer} />
           <View style={styles.logoCenter}>
-            <MaximaLogo width={160} height={50} color="white" />
+            <TouchableOpacity>
+              <MaximaLogo width={160} height={50} color="white" />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.infoButton} onPress={openInfo}>
+          <TouchableOpacity style={styles.infoButton} onPress={() => openInfo()}>
             <Ionicons name="information-circle-outline" size={28} color="#a29bfe" />
           </TouchableOpacity>
         </View>
@@ -304,19 +304,23 @@ export default function RadioScreen() {
         </View>
 
         {/* Central Player */}
-        <View style={styles.playerContainer}>
+        <View style={styles.playerContainer} collapsable={false}>
           {isVideoMode ? (
-            <VideoPlayer 
-              selectedVideoId={selectedVideoId}
-              onBackToLive={handleBackToLive}
-            />
+            <View key="video-player" collapsable={false}>
+              <VideoPlayer 
+                selectedVideoId={selectedVideoId}
+                onBackToLive={handleBackToLive}
+              />
+            </View>
           ) : (
-            <TrackPlayerRadio 
-              streamUrl={STREAMING_URLS.radioStream}
-              title="Máxima FM 95.5"
-              artist="En vivo desde Ceres"
-              ref={trackPlayerRadioRef}
-            />
+            <View key="audio-player" collapsable={false}>
+              <TrackPlayerRadio 
+                streamUrl={STREAMING_URLS.radioStream}
+                title="Máxima FM 95.5"
+                artist="En vivo desde Ceres"
+                ref={trackPlayerRadioRef}
+              />
+            </View>
           )}
 
           {/* Station Info */}
@@ -354,6 +358,8 @@ export default function RadioScreen() {
               </Text>
             </TouchableOpacity>
           </View>
+
+          
         </View>
 
         {/* Sección de Noticias */}

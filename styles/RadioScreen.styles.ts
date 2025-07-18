@@ -24,6 +24,12 @@ export const styles = StyleSheet.create({
   },
   infoButton: {
     padding: 10,
+    borderRadius: 20,
+    backgroundColor: 'rgba(162, 155, 254, 0.1)',
+    minWidth: 48,
+    minHeight: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   switchContainer: {
     flexDirection: 'row',

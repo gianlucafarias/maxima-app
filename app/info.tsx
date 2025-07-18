@@ -11,7 +11,7 @@ export default function InfoScreen() {
     {
       id: 1,
       nombre: "De Mañana Es Mejor",
-      horario: "07:00 - 90:00",
+      horario: "07:00 - 09:00",
       descripcion: "Empezá tu día con la mejor música y noticias",
       icon: "sunny-outline"
     },

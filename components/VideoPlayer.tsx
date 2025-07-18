@@ -94,7 +94,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   );
 
   return (
-    <View style={styles.videoContainer}>
+    <View style={styles.videoContainer} collapsable={false}>
       <WebView
         source={getVideoSource()}
         style={styles.webView}

@@ -96,7 +96,7 @@ export const TrackPlayerRadio = forwardRef<TrackPlayerRadioRef, TrackPlayerRadio
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} collapsable={false}>
       <LinearGradient
         colors={['#4c669f', '#3b5998', '#192f6a']}
         style={styles.playerCircle}
