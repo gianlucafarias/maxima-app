@@ -29,10 +29,11 @@ NO vendemos, alquilamos o compartimos su información personal con terceros, exc
 
 ## 4. Servicios de terceros
 
-La aplicación utiliza:
-- **Firebase**: Para notificaciones push y analytics
-- **YouTube**: Para contenido de video
-- **Servicios de RSS**: Para noticias
+La emisora titular de esta aplicación, Radio Máxima FM 95.5, asume plena responsabilidad por el uso de cualquier servicio de terceros integrado en la misma, y declara contar con las autorizaciones, licencias y derechos necesarios para su utilización.
+
+Cualquier contenido transmitido o visualizado a través de servicios externos es propiedad de la emisora o ha sido autorizado expresamente por sus titulares. La integración de dichos servicios se realiza conforme a sus respectivas políticas de uso y términos legales.
+
+La aplicación no permite el acceso, distribución, descarga ni reproducción de contenido de terceros no autorizado, y todo material accesible a través de la app corresponde exclusivamente a la emisora o a fuentes legalmente autorizadas.
 
 ## 5. Seguridad
 
