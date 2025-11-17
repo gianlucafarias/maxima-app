@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { Platform, StyleProp, TouchableOpacity, ViewStyle } from 'react-native';
+import React from 'react';
+import { Platform, StyleProp, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 
 interface TVTouchableProps {
   style?: StyleProp<ViewStyle>;
@@ -12,75 +12,44 @@ interface TVTouchableProps {
 
 /**
  * Componente que funciona tanto en dispositivos táctiles como en TV
- * En TV, muestra un estilo especial cuando el elemento tiene foco
- * En móvil, funciona como un TouchableOpacity normal
+ * En TV, Android aplica automáticamente el estilo de foco nativo
  */
 export const TVTouchable: React.FC<TVTouchableProps> = ({
   style,
-  focusedStyle,
   hasTVPreferredFocus = false,
   children,
   onPress,
   disabled = false,
 }) => {
-  const [isFocused, setIsFocused] = useState(false);
-
-  const handleFocus = useCallback(() => {
-    if (Platform.isTV) {
-      console.log('🎯✨ ELEMENTO ENFOCADO ✨');
-      setIsFocused(true);
-    }
-  }, []);
-
-  const handleBlur = useCallback(() => {
-    if (Platform.isTV) {
-      console.log('🎯 Elemento desenfocado');
-      setIsFocused(false);
-    }
-  }, []);
-
-  const handlePress = useCallback(() => {
-    console.log('🎯🔥 PRESIONADO - ejecutando onPress');
+  const handlePress = () => {
+    console.log('🎯🔥 PRESIONADO!');
     if (onPress) {
       onPress();
     }
-  }, [onPress]);
+  };
 
-  // Estilo por defecto para foco en TV - MUY VISIBLE
-  const defaultFocusedStyle: ViewStyle = Platform.isTV ? {
-    borderWidth: 4,
-    borderColor: '#00ff88', // Verde brillante muy visible
-    backgroundColor: 'rgba(0, 255, 136, 0.2)',
-    transform: [{ scale: 1.08 }],
-    shadowColor: '#00ff88',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 15,
-    elevation: 20,
-  } : {};
-
-  // Combinar estilos
-  const combinedStyle = [
+  // Crear estilo combinado con borde visible para TV
+  const combinedStyle = StyleSheet.flatten([
     style,
-    Platform.isTV && isFocused && defaultFocusedStyle,
-    Platform.isTV && isFocused && focusedStyle,
-  ];
+    Platform.isTV && styles.tvFocusable,
+  ]);
 
   return (
     <TouchableOpacity
       style={combinedStyle}
       onPress={handlePress}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
       disabled={disabled}
       activeOpacity={Platform.isTV ? 1 : 0.7}
       hasTVPreferredFocus={Platform.isTV ? hasTVPreferredFocus : undefined}
+      // Propiedades nativas de Android TV que SÍ funcionan
       tvParallaxProperties={Platform.isTV ? {
         enabled: true,
-        shiftDistanceX: 2.0,
-        shiftDistanceY: 2.0,
-        tiltAngle: 0.05,
-        magnification: 1.1,
+        shiftDistanceX: 3.0,
+        shiftDistanceY: 3.0,
+        tiltAngle: 0.1,
+        magnification: 1.15,
+        pressMagnification: 1.0,
+        pressDuration: 0.3,
       } : undefined}
     >
       {children}
@@ -88,3 +57,16 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
   );
 };
 
+const styles = StyleSheet.create({
+  tvFocusable: {
+    // Borde MUY VISIBLE SIEMPRE en TV para saber qué es clickeable
+    borderWidth: 5,
+    borderColor: '#00ff88', // Verde brillante SIEMPRE
+    backgroundColor: 'rgba(0, 255, 136, 0.2)',
+    shadowColor: '#00ff88',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 10,
+    elevation: 10,
+  },
+});
