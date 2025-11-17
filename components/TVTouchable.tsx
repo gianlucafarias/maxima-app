@@ -62,6 +62,13 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
   // Estilo visible cuando está enfocado
   const focusStyle = isFocused ? styles.focused : styles.unfocused;
 
+  // Log cuando cambia el estado de foco
+  useEffect(() => {
+    if (Platform.isTV) {
+      console.log(`🎯 TVTouchable [${id}]:`, isFocused ? 'ENFOCADO ✨' : 'sin foco');
+    }
+  }, [isFocused, id]);
+
   return (
     <TouchableOpacity
       style={[style, Platform.isTV && focusStyle]}

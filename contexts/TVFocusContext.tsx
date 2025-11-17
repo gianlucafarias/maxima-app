@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
-import { Platform, TVEventHandler } from 'react-native';
+import { Platform } from 'react-native';
+import { useTVRemoteNavigation } from '@/hooks/useTVRemoteNavigation';
 
 interface FocusableElement {
   id: string;
@@ -33,57 +34,62 @@ export const TVFocusProvider: React.FC<{ children: React.ReactNode }> = ({ child
     forceUpdate({});
   }, []);
 
-  // Manejar eventos del control remoto solo en TV
-  useEffect(() => {
-    if (!Platform.isTV) return;
+  // Manejar eventos del control remoto usando el hook existente
+  useTVRemoteNavigation((event) => {
+    console.log('🎮🎮🎮 EVENTO RECIBIDO:', event.eventType, '| Foco actual:', focusedId);
 
-    let tvEventHandler: TVEventHandler | null = null;
+    const focusablesArray = Array.from(focusableElementsRef.current.keys());
+    const currentIndex = focusablesArray.indexOf(focusedId || '');
 
-    try {
-      tvEventHandler = new TVEventHandler();
-      
-      tvEventHandler.enable(null, (cmp, evt) => {
-        const eventType = evt.eventType;
-        console.log('🎮 Evento TV:', eventType, '| Foco actual:', focusedId);
+    console.log('📋 Total elementos:', focusablesArray.length, '| Índice actual:', currentIndex, '| IDs:', focusablesArray);
 
-        const focusablesArray = Array.from(focusableElementsRef.current.keys());
-        const currentIndex = focusablesArray.indexOf(focusedId || '');
-
-        console.log('📋 Elementos focusables:', focusablesArray.length, '| Índice actual:', currentIndex);
-
-        if (eventType === 'select' || eventType === 'longSelect') {
-          console.log('✅ SELECT presionado en:', focusedId);
-          const element = focusableElementsRef.current.get(focusedId || '');
-          if (element?.onPress) {
-            console.log('🔥 Ejecutando onPress de:', focusedId);
-            element.onPress();
-          }
-        } else if (eventType === 'down' || eventType === 'right') {
-          // Navegar al siguiente elemento
-          const nextIndex = (currentIndex + 1) % focusablesArray.length;
-          const nextId = focusablesArray[nextIndex];
-          console.log('⬇️➡️ Navegando a:', nextId);
-          setFocusedId(nextId);
-        } else if (eventType === 'up' || eventType === 'left') {
-          // Navegar al elemento anterior
-          const prevIndex = currentIndex <= 0 ? focusablesArray.length - 1 : currentIndex - 1;
-          const prevId = focusablesArray[prevIndex];
-          console.log('⬆️⬅️ Navegando a:', prevId);
-          setFocusedId(prevId);
-        }
-      });
-
-      console.log('🎮 TVEventHandler inicializado correctamente');
-    } catch (error) {
-      console.error('❌ Error inicializando TVEventHandler:', error);
-    }
-
-    return () => {
-      if (tvEventHandler) {
-        tvEventHandler.disable();
+    if (event.eventType === 'select') {
+      console.log('✅✅✅ SELECT presionado en:', focusedId);
+      const element = focusableElementsRef.current.get(focusedId || '');
+      if (element?.onPress) {
+        console.log('🔥🔥🔥 Ejecutando onPress de:', focusedId);
+        element.onPress();
+      } else {
+        console.log('⚠️ Elemento sin onPress:', focusedId);
       }
-    };
+    } else if (event.eventType === 'down' || event.eventType === 'right') {
+      // Navegar al siguiente elemento
+      if (focusablesArray.length > 0) {
+        const nextIndex = (currentIndex + 1) % focusablesArray.length;
+        const nextId = focusablesArray[nextIndex];
+        console.log('⬇️➡️ Navegando de', focusedId, 'a', nextId);
+        setFocusedId(nextId);
+      }
+    } else if (event.eventType === 'up' || event.eventType === 'left') {
+      // Navegar al elemento anterior
+      if (focusablesArray.length > 0) {
+        const prevIndex = currentIndex <= 0 ? focusablesArray.length - 1 : currentIndex - 1;
+        const prevId = focusablesArray[prevIndex];
+        console.log('⬆️⬅️ Navegando de', focusedId, 'a', prevId);
+        setFocusedId(prevId);
+      }
+    }
+  });
+
+  // Log cuando cambia el foco
+  useEffect(() => {
+    if (Platform.isTV && focusedId) {
+      console.log('🎯🎯🎯 FOCO CAMBIADO A:', focusedId);
+      const element = focusableElementsRef.current.get(focusedId);
+      console.log('📦 Elemento:', element ? 'encontrado' : 'NO encontrado');
+    }
   }, [focusedId]);
+
+  // Log cuando se registran elementos
+  useEffect(() => {
+    if (Platform.isTV) {
+      const count = focusableElementsRef.current.size;
+      console.log('📊 Total elementos focusables registrados:', count);
+      if (count > 0) {
+        console.log('📋 IDs registrados:', Array.from(focusableElementsRef.current.keys()));
+      }
+    }
+  }, [forceUpdate]);
 
   return (
     <TVFocusContext.Provider value={{ 
