@@ -35,9 +35,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       };
     }
     
-    // Para Twitch, mantener la configuración actual
+    // Para Twitch, habilitar autoplay para TV
     return {
-      uri: `https://player.twitch.tv/?channel=${STREAMING_URLS.twitchChannel}&parent=localhost&parent=127.0.0.1&parent=exp.host&parent=expo.dev&autoplay=false&muted=false`
+      uri: `https://player.twitch.tv/?channel=${STREAMING_URLS.twitchChannel}&parent=localhost&parent=127.0.0.1&parent=exp.host&parent=expo.dev&autoplay=true&muted=false`
     };
   };
 
@@ -141,7 +141,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           mixedContentMode="compatibility"
           thirdPartyCookiesEnabled={true}
           sharedCookiesEnabled={true}
-          // Headers adicionales para YouTube
+          // JavaScript inyectado para YouTube o Twitch
           injectedJavaScript={selectedVideoId ? `
             // Configurar referrer para YouTube
             if (document.referrer === '') {
@@ -151,7 +151,52 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               });
             }
             true;
-          ` : undefined}
+          ` : `
+            // Para Twitch: asegurar que se reproduzca automáticamente
+            (function() {
+              function tryPlay() {
+                try {
+                  // Buscar el iframe de Twitch
+                  const iframe = document.querySelector('iframe');
+                  if (iframe && iframe.contentWindow) {
+                    // Intentar enviar mensaje para reproducir
+                    iframe.contentWindow.postMessage({ event: 'command', func: 'playVideo' }, '*');
+                  }
+                  
+                  // También intentar con el API de Twitch Player si está disponible
+                  if (window.Twitch && window.Twitch.Player) {
+                    const player = window.Twitch.Player;
+                    if (player && typeof player.play === 'function') {
+                      player.play();
+                    }
+                  }
+                  
+                  // Método alternativo: buscar botón de play y hacer click
+                  setTimeout(function() {
+                    const playButton = document.querySelector('[aria-label="Play"], .twitch-player button[aria-label*="play" i]');
+                    if (playButton) {
+                      playButton.click();
+                    }
+                  }, 1000);
+                } catch (e) {
+                  console.log('Error intentando reproducir Twitch:', e);
+                }
+              }
+              
+              // Intentar cuando el documento esté listo
+              if (document.readyState === 'complete') {
+                tryPlay();
+              } else {
+                window.addEventListener('load', tryPlay);
+                document.addEventListener('DOMContentLoaded', tryPlay);
+              }
+              
+              // También intentar después de un delay para asegurar que el player esté cargado
+              setTimeout(tryPlay, 2000);
+              setTimeout(tryPlay, 5000);
+            })();
+            true;
+          `}
         />
         
         {/* Indicador visual de pantalla completa en TV */}
