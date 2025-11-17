@@ -72,10 +72,14 @@ class MainActivity : ReactActivity() {
    * y los envía a JavaScript para navegación manual
    */
   override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-    val reactInstanceManager = reactInstanceManager
+    android.util.Log.d("MainActivity", "🎮 Tecla presionada: keyCode=$keyCode")
+    
+    val reactInstanceManager = reactNativeHost.reactInstanceManager
     
     if (reactInstanceManager != null) {
       val reactContext = reactInstanceManager.currentReactContext
+      
+      android.util.Log.d("MainActivity", "📦 ReactContext: ${if (reactContext != null) "disponible" else "null"}")
       
       if (reactContext != null) {
         val eventType = when (keyCode) {
@@ -89,19 +93,31 @@ class MainActivity : ReactActivity() {
           else -> null
         }
         
+        android.util.Log.d("MainActivity", "🎯 EventType mapeado: $eventType")
+        
         if (eventType != null) {
           val params = Arguments.createMap()
           params.putString("eventType", eventType)
           params.putInt("keyCode", keyCode)
           
+          android.util.Log.d("MainActivity", "📤 Enviando evento a JS: $eventType")
+          
           reactContext
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
             .emit("TVRemoteKeyEvent", params)
           
+          android.util.Log.d("MainActivity", "✅ Evento enviado correctamente")
+          
           // Retornar true para indicar que manejamos el evento
           return true
+        } else {
+          android.util.Log.d("MainActivity", "⚠️ KeyCode no mapeado: $keyCode")
         }
+      } else {
+        android.util.Log.d("MainActivity", "❌ ReactContext es null")
       }
+    } else {
+      android.util.Log.d("MainActivity", "❌ ReactInstanceManager es null")
     }
     
     return super.onKeyDown(keyCode, event)
