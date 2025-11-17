@@ -30,7 +30,7 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
   // Registrar este elemento como focusable
   useEffect(() => {
     if (Platform.isTV) {
-      registerFocusable(id);
+      registerFocusable(id, onPress);
       
       // Si tiene preferencia de foco inicial, establecerlo
       if (hasTVPreferredFocus) {
@@ -43,7 +43,7 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
         unregisterFocusable(id);
       }
     };
-  }, [id, hasTVPreferredFocus, registerFocusable, unregisterFocusable, setFocusedId]);
+  }, [id, hasTVPreferredFocus, onPress, registerFocusable, unregisterFocusable, setFocusedId]);
 
   const handlePress = () => {
     console.log('🎯🔥 PRESIONADO:', id);
@@ -78,19 +78,18 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
 
 const styles = StyleSheet.create({
   focused: {
-    borderWidth: 6,
-    borderColor: '#ff00ff', // MAGENTA brillante cuando está enfocado
-    backgroundColor: 'rgba(255, 0, 255, 0.25)',
-    transform: [{ scale: 1.05 }],
-    shadowColor: '#ff00ff',
+    borderWidth: 4,
+    borderColor: '#00ffff', // CYAN brillante cuando está enfocado
+    backgroundColor: 'rgba(0, 255, 255, 0.2)',
+    transform: [{ scale: 1.08 }],
+    shadowColor: '#00ffff',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
-    shadowRadius: 15,
-    elevation: 20,
+    shadowRadius: 20,
+    elevation: 25,
   },
   unfocused: {
-    borderWidth: 2,
-    borderColor: 'rgba(0, 255, 136, 0.4)', // Verde claro cuando NO está enfocado
-    backgroundColor: 'rgba(0, 255, 136, 0.05)',
+    borderWidth: 0,
+    borderColor: 'transparent',
   },
 });
