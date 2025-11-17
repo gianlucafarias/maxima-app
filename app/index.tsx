@@ -11,7 +11,6 @@ import { LiveStreamIndicator } from '@/components/LiveStreamIndicator';
 import { MaximaLogo } from '@/components/MaximaLogo';
 import NewsSection from '@/components/NewsSection';
 import { TrackPlayerRadio, TrackPlayerRadioRef } from '@/components/TrackPlayerRadio';
-import { TVIndicator } from '@/components/TVIndicator';
 import { TVTouchable } from '@/components/TVTouchable';
 import VideoPlayer from '@/components/VideoPlayer';
 import YouTubeSection from '@/components/YouTubeSection';
@@ -556,7 +555,6 @@ export default function RadioScreen() {
       style={combinedStyles.container}
     >
       <StatusBar style="light" />
-      <TVIndicator />
       
       {renderContent()}
     </LinearGradient>

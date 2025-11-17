@@ -92,8 +92,8 @@ android {
         applicationId 'com.maximaceres.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0.8"
+        versionCode 9
+        versionName "1.1.0"
     }
     signingConfigs {
         debug {
@@ -102,15 +102,31 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            // Configuración de keystore de producción
+            // Las credenciales se leen desde gradle.properties
+            if (project.hasProperty('MAXIMA_UPLOAD_STORE_FILE')) {
+                // Keystore debe estar en android/app/ (igual que en develop)
+                storeFile file(MAXIMA_UPLOAD_STORE_FILE)
+                storePassword MAXIMA_UPLOAD_STORE_PASSWORD
+                keyAlias MAXIMA_UPLOAD_KEY_ALIAS
+                keyPassword MAXIMA_UPLOAD_KEY_PASSWORD
+            }
+        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            // Usar keystore de producción si está configurado
+            if (project.hasProperty('MAXIMA_UPLOAD_STORE_FILE')) {
+                signingConfig signingConfigs.release
+            } else {
+                // Fallback a debug solo para desarrollo local
+                // ⚠️ NO usar esto para builds de producción
+                signingConfig signingConfigs.debug
+            }
             shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"

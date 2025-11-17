@@ -2,7 +2,7 @@
   "expo": {
     "name": "La Max Stream Radio",
     "slug": "la-max-955-app",
-    "version": "1.0.8",
+    "version": "1.1.0",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "la-max-955-app",
