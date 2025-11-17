@@ -8,6 +8,7 @@ interface TVTouchableProps {
   focusedStyle?: StyleProp<ViewStyle>;
   hasTVPreferredFocus?: boolean;
   onPress?: () => void;
+  onFocus?: () => void; // Callback cuando el elemento recibe foco
   disabled?: boolean;
   children?: React.ReactNode;
 }
@@ -22,6 +23,7 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
   hasTVPreferredFocus = false,
   children,
   onPress,
+  onFocus: onFocusCallback,
   disabled = false,
 }) => {
   const { focusedId, setFocusedId, registerFocusable, unregisterFocusable } = useTVFocus();
@@ -64,6 +66,10 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
       console.log('🎯✨ FOCO NATIVO EN:', id);
       // Con react-native-tvos, onFocus funciona correctamente
       setFocusedId(id);
+      // Llamar callback personalizado si existe
+      if (onFocusCallback) {
+        onFocusCallback();
+      }
     }
   };
 

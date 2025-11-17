@@ -2,7 +2,7 @@ import { YouTubeVideo } from '@/hooks/useYouTubeRSS';
 import { TVTouchable } from '@/components/TVTouchable';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -28,11 +28,37 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
   lastUpdate,
   onRefresh
 }) => {
+  const scrollViewRef = useRef<ScrollView>(null);
+  const cardRefs = useRef<{ [key: number]: View | null }>({});
 
   // No mostrar la sección si no hay videos y no está cargando
   if (!loading && videos.length === 0) {
     return null;
   }
+
+  // Función para hacer scroll cuando un elemento recibe foco
+  const handleCardFocus = (index: number) => {
+    if (!Platform.isTV || !scrollViewRef.current) return;
+    
+    const cardRef = cardRefs.current[index];
+    if (!cardRef) return;
+
+    // Usar measure para obtener la posición del elemento
+    cardRef.measureLayout(
+      scrollViewRef.current as any,
+      (x, y, width, height) => {
+        // Hacer scroll para centrar el elemento en la vista
+        const scrollX = Math.max(0, x - 100); // 100px de padding desde el borde izquierdo
+        scrollViewRef.current?.scrollTo({ x: scrollX, animated: true });
+      },
+      () => {
+        // Si falla measureLayout, intentar con scroll basado en índice
+        const cardWidth = 280 + 8; // width + marginHorizontal
+        const scrollX = Math.max(0, index * cardWidth - 100);
+        scrollViewRef.current?.scrollTo({ x: scrollX, animated: true });
+      }
+    );
+  };
 
   const openVideo = async (url: string, title: string) => {
     try {
@@ -158,38 +184,6 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
     }
   };
 
-  // Función temporal de debug para mostrar información de videos
-  const showDebugInfo = () => {
-    if (videos.length === 0) {
-      Alert.alert('Debug', 'No hay videos cargados');
-      return;
-    }
-
-    const firstVideo = videos[0];
-    const debugInfo = `
-🔍 DEBUG INFO:
-📹 Videos cargados: ${videos.length}
-📝 Primer video: ${firstVideo.title}
-🔗 URL: ${firstVideo.link}
-🆔 ID: ${firstVideo.id}
-🖼️ Thumbnail: ${firstVideo.thumbnail}
-📅 Fecha: ${firstVideo.publishDate}
-    `.trim();
-
-    Alert.alert(
-      'Debug - Videos RSS',
-      debugInfo,
-      [
-        { text: 'Cerrar' },
-        { 
-          text: 'Probar primer video', 
-          onPress: () => openVideo(firstVideo.link, firstVideo.title)
-        }
-      ]
-    );
-
-  };
-
   const formatLastUpdate = () => {
     if (!lastUpdate) return '';
     
@@ -249,19 +243,26 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
       {videos.length > 0 ? (
         <>
           <ScrollView 
+            ref={scrollViewRef}
             horizontal 
             showsHorizontalScrollIndicator={false}
             style={styles.videosScroll}
             contentContainerStyle={styles.videosScrollContent}
-            scrollEnabled={Platform.isTV ? false : true}
+            scrollEnabled={true}
+            nestedScrollEnabled={true}
           >
             {videos.map((video, index) => (
-              <TVTouchable
+              <View
                 key={video.id}
-                id={`youtube-video-${index}`}
-                style={styles.videoCard}
-                onPress={() => openVideo(video.link, video.title)}
+                ref={(ref) => { cardRefs.current[index] = ref; }}
+                collapsable={false}
               >
+                <TVTouchable
+                  id={`youtube-video-${index}`}
+                  style={styles.videoCard}
+                  onPress={() => openVideo(video.link, video.title)}
+                  onFocus={() => handleCardFocus(index)}
+                >
                 <LinearGradient
                   colors={['rgba(255, 71, 87, 0.15)', 'rgba(255, 71, 87, 0.05)']}
                   style={styles.cardGradient}
@@ -307,6 +308,7 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
                   </View>
                 </LinearGradient>
               </TVTouchable>
+              </View>
             ))}
           </ScrollView>
 

@@ -265,7 +265,8 @@ export default function RadioScreen() {
           <ScrollView 
             contentContainerStyle={combinedStyles.tvColumnContent}
             showsVerticalScrollIndicator={false}
-            scrollEnabled={false}
+            scrollEnabled={true}
+            nestedScrollEnabled={true}
           >
             {/* Logo Header */}
             <View style={combinedStyles.logoContainer}>
@@ -385,7 +386,8 @@ export default function RadioScreen() {
           <ScrollView 
             contentContainerStyle={combinedStyles.tvColumnContent}
             showsVerticalScrollIndicator={false}
-            scrollEnabled={false}
+            scrollEnabled={true}
+            nestedScrollEnabled={true}
           >
             {/* Sección de Noticias */}
             <NewsSection

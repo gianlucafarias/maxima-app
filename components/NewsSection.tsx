@@ -2,7 +2,7 @@ import { NewsItem } from '@/types/youtube';
 import { TVTouchable } from '@/components/TVTouchable';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -27,11 +27,37 @@ const NewsSection: React.FC<NewsSectionProps> = ({
   lastUpdate,
   onRefresh
 }) => {
+  const scrollViewRef = useRef<ScrollView>(null);
+  const cardRefs = useRef<{ [key: number]: View | null }>({});
 
   // No mostrar la sección si no hay noticias y no está cargando
   if (!loading && news.length === 0) {
     return null;
   }
+
+  // Función para hacer scroll cuando un elemento recibe foco
+  const handleCardFocus = (index: number) => {
+    if (!Platform.isTV || !scrollViewRef.current) return;
+    
+    const cardRef = cardRefs.current[index];
+    if (!cardRef) return;
+
+    // Usar measure para obtener la posición del elemento
+    cardRef.measureLayout(
+      scrollViewRef.current as any,
+      (x, y, width, height) => {
+        // Hacer scroll para centrar el elemento en la vista
+        const scrollX = Math.max(0, x - 100); // 100px de padding desde el borde izquierdo
+        scrollViewRef.current?.scrollTo({ x: scrollX, animated: true });
+      },
+      () => {
+        // Si falla measureLayout, intentar con scroll basado en índice
+        const cardWidth = 260 + 15; // width + marginRight
+        const scrollX = Math.max(0, index * cardWidth - 100);
+        scrollViewRef.current?.scrollTo({ x: scrollX, animated: true });
+      }
+    );
+  };
 
   const openNewsLink = async (url: string, title: string) => {
     try {
@@ -65,7 +91,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({
           month: '2-digit'
         });
       }
-    } catch (error) {
+    } catch {
       return 'Reciente';
     }
   };
@@ -122,19 +148,26 @@ const NewsSection: React.FC<NewsSectionProps> = ({
       {/* Lista de noticias */}
       {news.length > 0 ? (
         <ScrollView 
+          ref={scrollViewRef}
           horizontal 
           showsHorizontalScrollIndicator={false}
           style={styles.newsScroll}
           contentContainerStyle={styles.newsScrollContent}
-          scrollEnabled={Platform.isTV ? false : true}
+          scrollEnabled={true}
+          nestedScrollEnabled={true}
         >
           {news.map((item, index) => (
-            <TVTouchable
+            <View
               key={item.id}
-              id={`news-${index}`}
-              style={styles.newsCard}
-              onPress={() => openNewsLink(item.link, item.title)}
+              ref={(ref) => { cardRefs.current[index] = ref; }}
+              collapsable={false}
             >
+              <TVTouchable
+                id={`news-${index}`}
+                style={styles.newsCard}
+                onPress={() => openNewsLink(item.link, item.title)}
+                onFocus={() => handleCardFocus(index)}
+              >
               <LinearGradient
                 colors={['rgba(108, 92, 231, 0.15)', 'rgba(162, 155, 254, 0.05)']}
                 style={styles.cardGradient}
@@ -167,6 +200,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({
                 </View>
               </LinearGradient>
             </TVTouchable>
+            </View>
           ))}
         </ScrollView>
       ) : null}
