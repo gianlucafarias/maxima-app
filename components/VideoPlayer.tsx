@@ -1,11 +1,11 @@
-import { STREAMING_URLS } from '@/config/constants';
 import { TVTouchable } from '@/components/TVTouchable';
+import { STREAMING_URLS } from '@/config/constants';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Linking from 'expo-linking';
+import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { Dimensions, Modal, Platform, StyleSheet, Text, View } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
 import { WebView } from 'react-native-webview';
 
 const { width, height } = Dimensions.get('window');
@@ -119,6 +119,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           bounces={false}
           scrollEnabled={false}
           allowsLinkPreview={false}
+          // Deshabilitar foco en WebView para que los botones puedan recibir foco
+          focusable={Platform.isTV ? false : undefined}
           renderLoading={renderLoading}
           renderError={renderError}
           onError={(syntheticEvent) => {
@@ -146,7 +148,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           ` : undefined}
         />
         
-        {/* Botones de control */}
+        {/* Botones de control - Capa superior para recibir foco */}
         {Platform.isTV && (
           <>
             {/* Botón de pantalla completa */}
@@ -157,6 +159,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 isFullscreen ? styles.fullscreenButton : styles.fullscreenButtonNormal
               ]}
               onPress={toggleFullscreen}
+              hasTVPreferredFocus={!selectedVideoId && !isFullscreen}
             >
               <Ionicons 
                 name={isFullscreen ? "contract" : "expand"} 
@@ -186,6 +189,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 id="exit-fullscreen"
                 style={styles.exitFullscreenButton}
                 onPress={toggleFullscreen}
+                hasTVPreferredFocus={true}
               >
                 <Ionicons name="close" size={24} color="white" />
                 <Text style={styles.exitFullscreenText}>Salir</Text>
@@ -235,15 +239,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   fullscreenContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    flex: 1,
     width: width,
     height: height,
     borderRadius: 0,
-    zIndex: 9999,
     backgroundColor: '#000',
   },
   webView: {
@@ -328,7 +327,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     borderRadius: 20,
-    zIndex: 10,
+    zIndex: 9999,
+    elevation: 10,
   },
   fullscreenButtonNormal: {
     // Estilo normal para el botón de pantalla completa
@@ -351,7 +351,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(255, 0, 0, 0.8)',
     borderRadius: 20,
-    zIndex: 10,
+    zIndex: 9999,
+    elevation: 10,
   },
   exitFullscreenText: {
     fontSize: Platform.isTV ? 18 : 14,
