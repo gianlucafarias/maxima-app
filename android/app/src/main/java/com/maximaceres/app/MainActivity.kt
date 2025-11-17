@@ -69,7 +69,7 @@ class MainActivity : ReactActivity() {
 
   /**
    * Captura eventos de teclado del control remoto de TV
-   * Usa dispatchKeyEvent para capturar TODOS los eventos antes de que React Native los procese
+   * Envía eventos a JavaScript PERO también permite que React Native los procese
    */
   override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
     if (event?.action == KeyEvent.ACTION_DOWN) {
@@ -105,14 +105,13 @@ class MainActivity : ReactActivity() {
               .emit("TVRemoteKeyEvent", params)
             
             android.util.Log.d("MainActivity", "✅ Evento enviado correctamente")
-            
-            // Retornar true para indicar que manejamos el evento
-            return true
           }
         }
       }
     }
     
+    // NO retornar true - permitir que React Native también procese el evento
+    // Esto permite que el sistema de foco nativo funcione
     return super.dispatchKeyEvent(event)
   }
 }
