@@ -47,6 +47,13 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
 
   const handlePress = () => {
     console.log('🎯🔥 PRESIONADO:', id);
+    
+    // En TV, cuando haces click, también establecer el foco
+    if (Platform.isTV) {
+      console.log('🎯✨ ESTABLECIENDO FOCO AL HACER CLICK:', id);
+      setFocusedId(id);
+    }
+    
     if (onPress) {
       onPress();
     }
@@ -85,16 +92,17 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
 
 const styles = StyleSheet.create({
   focused: {
-    borderWidth: 8,
-    borderColor: '#ffff00', // AMARILLO BRILLANTE cuando está enfocado
-    backgroundColor: 'rgba(255, 255, 0, 0.3)',
-    transform: [{ scale: 1.15 }],
-    shadowColor: '#ffff00',
+    borderWidth: 12,
+    borderColor: '#ff0000', // ROJO BRILLANTE cuando está enfocado
+    backgroundColor: 'rgba(255, 0, 0, 0.4)',
+    transform: [{ scale: 1.2 }],
+    shadowColor: '#ff0000',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
-    shadowRadius: 30,
-    elevation: 30,
+    shadowRadius: 40,
+    elevation: 50,
     zIndex: 9999,
+    borderRadius: 8,
   },
   unfocused: {
     borderWidth: 0,
