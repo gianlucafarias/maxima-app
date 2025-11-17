@@ -191,6 +191,23 @@ npm install --save-dev cross-env
 
 ---
 
+## 🎮 Navegación con Control Remoto
+
+Con `react-native-tvos`, el sistema nativo maneja automáticamente:
+
+- ✅ **Navegación con flechas**: Las flechas del control remoto mueven el foco automáticamente
+- ✅ **Eventos onFocus/onBlur**: Funcionan correctamente sin código adicional
+- ✅ **Botón OK/Select**: Activa el elemento enfocado automáticamente
+- ✅ **Feedback visual**: El componente `TVTouchable` muestra un borde rojo cuando está enfocado
+
+### Cómo Funciona:
+
+1. **Sistema nativo**: `react-native-tvos` maneja toda la navegación automáticamente
+2. **Foco visual**: Nuestro código solo trackea qué elemento está enfocado para mostrar el borde rojo
+3. **Sin código manual**: Ya NO necesitamos capturar eventos de teclado manualmente
+
+---
+
 ## 🐛 Troubleshooting
 
 ### Si un build móvil falla después de la migración:
@@ -211,6 +228,15 @@ npm install --save-dev cross-env
    ```
 
 2. Asegúrate de hacer `prebuild --clean` después de configurar la variable
+
+### Si el foco no se ve en TV:
+
+1. Verifica que estés usando `TVTouchable` en lugar de `TouchableOpacity`
+2. Asegúrate de que cada `TVTouchable` tenga un `id` único
+3. Revisa los logs para ver si `onFocus` se está disparando:
+   ```bash
+   adb logcat | findstr "FOCO NATIVO"
+   ```
 
 ---
 
