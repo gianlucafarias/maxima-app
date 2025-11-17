@@ -48,9 +48,9 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
   const handlePress = () => {
     console.log('🎯🔥 PRESIONADO:', id);
     
-    // En TV, cuando haces click, también establecer el foco
+    // En TV, cuando haces click, establecer el foco INMEDIATAMENTE
     if (Platform.isTV) {
-      console.log('🎯✨ ESTABLECIENDO FOCO AL HACER CLICK:', id);
+      console.log('🎯✨✨✨ ESTABLECIENDO FOCO INMEDIATAMENTE:', id);
       setFocusedId(id);
     }
     

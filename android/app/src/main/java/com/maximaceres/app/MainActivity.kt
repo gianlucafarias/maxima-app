@@ -69,57 +69,50 @@ class MainActivity : ReactActivity() {
 
   /**
    * Captura eventos de teclado del control remoto de TV
-   * y los envía a JavaScript para navegación manual
+   * Usa dispatchKeyEvent para capturar TODOS los eventos antes de que React Native los procese
    */
-  override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-    android.util.Log.d("MainActivity", "🎮 Tecla presionada: keyCode=$keyCode")
-    
-    val reactInstanceManager = reactNativeHost.reactInstanceManager
-    
-    if (reactInstanceManager != null) {
-      val reactContext = reactInstanceManager.currentReactContext
+  override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
+    if (event?.action == KeyEvent.ACTION_DOWN) {
+      val keyCode = event.keyCode
+      android.util.Log.d("MainActivity", "🎮🎮🎮 dispatchKeyEvent: keyCode=$keyCode")
       
-      android.util.Log.d("MainActivity", "📦 ReactContext: ${if (reactContext != null) "disponible" else "null"}")
+      val reactInstanceManager = reactNativeHost.reactInstanceManager
       
-      if (reactContext != null) {
-        val eventType = when (keyCode) {
-          KeyEvent.KEYCODE_DPAD_UP -> "up"
-          KeyEvent.KEYCODE_DPAD_DOWN -> "down"
-          KeyEvent.KEYCODE_DPAD_LEFT -> "left"
-          KeyEvent.KEYCODE_DPAD_RIGHT -> "right"
-          KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> "select"
-          KeyEvent.KEYCODE_BACK -> "back"
-          KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> "playPause"
-          else -> null
-        }
+      if (reactInstanceManager != null) {
+        val reactContext = reactInstanceManager.currentReactContext
         
-        android.util.Log.d("MainActivity", "🎯 EventType mapeado: $eventType")
-        
-        if (eventType != null) {
-          val params = Arguments.createMap()
-          params.putString("eventType", eventType)
-          params.putInt("keyCode", keyCode)
+        if (reactContext != null) {
+          val eventType = when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_UP -> "up"
+            KeyEvent.KEYCODE_DPAD_DOWN -> "down"
+            KeyEvent.KEYCODE_DPAD_LEFT -> "left"
+            KeyEvent.KEYCODE_DPAD_RIGHT -> "right"
+            KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> "select"
+            KeyEvent.KEYCODE_BACK -> "back"
+            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> "playPause"
+            else -> null
+          }
           
-          android.util.Log.d("MainActivity", "📤 Enviando evento a JS: $eventType")
-          
-          reactContext
-            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-            .emit("TVRemoteKeyEvent", params)
-          
-          android.util.Log.d("MainActivity", "✅ Evento enviado correctamente")
-          
-          // Retornar true para indicar que manejamos el evento
-          return true
-        } else {
-          android.util.Log.d("MainActivity", "⚠️ KeyCode no mapeado: $keyCode")
+          if (eventType != null) {
+            android.util.Log.d("MainActivity", "📤 Enviando evento a JS: $eventType")
+            
+            val params = Arguments.createMap()
+            params.putString("eventType", eventType)
+            params.putInt("keyCode", keyCode)
+            
+            reactContext
+              .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+              .emit("TVRemoteKeyEvent", params)
+            
+            android.util.Log.d("MainActivity", "✅ Evento enviado correctamente")
+            
+            // Retornar true para indicar que manejamos el evento
+            return true
+          }
         }
-      } else {
-        android.util.Log.d("MainActivity", "❌ ReactContext es null")
       }
-    } else {
-      android.util.Log.d("MainActivity", "❌ ReactInstanceManager es null")
     }
     
-    return super.onKeyDown(keyCode, event)
+    return super.dispatchKeyEvent(event)
   }
 }
