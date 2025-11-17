@@ -1,10 +1,12 @@
 import React, { useCallback, useState } from 'react';
-import { Platform, Pressable, PressableProps, StyleProp, ViewStyle } from 'react-native';
+import { Platform, StyleProp, TouchableOpacity, ViewStyle } from 'react-native';
 
-interface TVTouchableProps extends Omit<PressableProps, 'style'> {
+interface TVTouchableProps {
   style?: StyleProp<ViewStyle>;
   focusedStyle?: StyleProp<ViewStyle>;
   hasTVPreferredFocus?: boolean;
+  onPress?: () => void;
+  disabled?: boolean;
   children?: React.ReactNode;
 }
 
@@ -19,13 +21,13 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
   hasTVPreferredFocus = false,
   children,
   onPress,
-  ...props
+  disabled = false,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const handleFocus = useCallback(() => {
     if (Platform.isTV) {
-      console.log('🎯 Elemento enfocado');
+      console.log('🎯✨ ELEMENTO ENFOCADO ✨');
       setIsFocused(true);
     }
   }, []);
@@ -37,16 +39,24 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
     }
   }, []);
 
-  // Estilo por defecto para foco en TV
+  const handlePress = useCallback(() => {
+    console.log('🎯🔥 PRESIONADO - ejecutando onPress');
+    if (onPress) {
+      onPress();
+    }
+  }, [onPress]);
+
+  // Estilo por defecto para foco en TV - MUY VISIBLE
   const defaultFocusedStyle: ViewStyle = Platform.isTV ? {
-    borderWidth: 3,
-    borderColor: '#6c5ce7',
-    transform: [{ scale: 1.05 }],
-    shadowColor: '#6c5ce7',
+    borderWidth: 4,
+    borderColor: '#00ff88', // Verde brillante muy visible
+    backgroundColor: 'rgba(0, 255, 136, 0.2)',
+    transform: [{ scale: 1.08 }],
+    shadowColor: '#00ff88',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 10,
-    elevation: 10,
+    shadowOpacity: 1,
+    shadowRadius: 15,
+    elevation: 20,
   } : {};
 
   // Combinar estilos
@@ -57,20 +67,24 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
   ];
 
   return (
-    <Pressable
-      style={({ pressed }) => [
-        combinedStyle,
-        // En móvil, mostrar feedback visual al presionar
-        !Platform.isTV && pressed && { opacity: 0.7 },
-      ]}
-      onPress={onPress}
+    <TouchableOpacity
+      style={combinedStyle}
+      onPress={handlePress}
       onFocus={handleFocus}
       onBlur={handleBlur}
+      disabled={disabled}
+      activeOpacity={Platform.isTV ? 1 : 0.7}
       hasTVPreferredFocus={Platform.isTV ? hasTVPreferredFocus : undefined}
-      {...props}
+      tvParallaxProperties={Platform.isTV ? {
+        enabled: true,
+        shiftDistanceX: 2.0,
+        shiftDistanceY: 2.0,
+        tiltAngle: 0.05,
+        magnification: 1.1,
+      } : undefined}
     >
       {children}
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

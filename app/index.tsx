@@ -252,14 +252,157 @@ export default function RadioScreen() {
       });
   };
 
-  return (
-    <LinearGradient
-      colors={['#1a1a2e', '#16213e', '#0f3460']}
-      style={combinedStyles.container}
-    >
-      <StatusBar style="light" />
-      <TVIndicator />
-      
+  // Renderizar layout según plataforma
+  const renderContent = () => {
+    if (Platform.isTV) {
+      // Layout de 2 columnas para TV
+      return (
+        <View style={combinedStyles.tvMainContainer}>
+          {/* Columna Izquierda - Player y Controles */}
+          <ScrollView 
+            style={combinedStyles.tvLeftColumn}
+            contentContainerStyle={combinedStyles.tvColumnContent}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={false}
+          >
+            {/* Logo Header */}
+            <View style={combinedStyles.logoContainer}>
+              <View style={combinedStyles.logoCenter}>
+                <MaximaLogo width={140} height={45} color="white" />
+              </View>
+              <TVTouchable style={combinedStyles.infoButton} onPress={() => openInfo()}>
+                <Ionicons name="information-circle-outline" size={26} color="#a29bfe" />
+              </TVTouchable>
+            </View>
+
+            {/* Mode Toggle Switch */}
+            <View style={combinedStyles.switchContainer}>
+              <TVTouchable 
+                style={[combinedStyles.switchButton, !isVideoMode && combinedStyles.switchButtonActive]}
+                onPress={() => !isVideoMode || toggleMode()}
+                hasTVPreferredFocus={!isVideoMode}
+              >
+                <Ionicons 
+                  name="volume-high" 
+                  size={18} 
+                  color={!isVideoMode ? 'white' : '#a29bfe'} 
+                />
+                <Text 
+                  style={[combinedStyles.switchText, !isVideoMode && combinedStyles.switchTextActive]}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit={true}
+                  allowFontScaling={false}
+                >
+                  Audio
+                </Text>
+              </TVTouchable>
+              
+              <TVTouchable 
+                style={[combinedStyles.switchButton, isVideoMode && combinedStyles.switchButtonActive]}
+                onPress={() => isVideoMode || toggleMode()}
+                hasTVPreferredFocus={isVideoMode}
+              >
+                <Ionicons 
+                  name="videocam" 
+                  size={18} 
+                  color={isVideoMode ? 'white' : '#a29bfe'} 
+                />
+                <Text 
+                  style={[combinedStyles.switchText, isVideoMode && combinedStyles.switchTextActive]}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit={true}
+                  allowFontScaling={false}
+                >
+                  Video
+                </Text>
+              </TVTouchable>
+            </View>
+
+            {/* Central Player */}
+            <View style={combinedStyles.playerContainer} collapsable={false}>
+              {isVideoMode ? (
+                <View key="video-player" collapsable={false}>
+                  <VideoPlayer 
+                    selectedVideoId={selectedVideoId}
+                    onBackToLive={handleBackToLive}
+                  />
+                </View>
+              ) : (
+                <View key="audio-player" collapsable={false}>
+                  <TrackPlayerRadio 
+                    streamUrl={STREAMING_URLS.radioStream}
+                    title="Máxima FM 95.5"
+                    artist="En vivo desde Ceres"
+                    ref={trackPlayerRadioRef}
+                  />
+                </View>
+              )}
+
+              {/* Station Info */}
+              <View style={combinedStyles.stationInfo}>
+                <Text style={combinedStyles.stationName}>La Max Stream Radio</Text>
+                <Text style={combinedStyles.frequency}>95.5 FM</Text>
+                
+                <LiveStreamIndicator
+                  liveStream={liveStream}
+                  mode={isVideoMode ? 'video' : 'audio'}
+                  selectedVideoId={selectedVideoId}
+                  onPress={() => startLiveStream(liveStream)}
+                />
+              </View>
+            </View>
+
+            {/* WhatsApp Button */}
+            <View style={combinedStyles.controlsContainer}>
+              <View style={combinedStyles.whatsappContainer}>
+                <TVTouchable 
+                  style={combinedStyles.whatsappButton}
+                  onPress={openWhatsApp}
+                >
+                  <Ionicons 
+                    name="logo-whatsapp" 
+                    size={22} 
+                    color="white" 
+                  />
+                  <Text style={combinedStyles.whatsappText}>
+                    Enviar mensaje
+                  </Text>
+                </TVTouchable>
+              </View>
+            </View>
+          </ScrollView>
+
+          {/* Columna Derecha - Noticias y Videos */}
+          <ScrollView 
+            style={combinedStyles.tvRightColumn}
+            contentContainerStyle={combinedStyles.tvColumnContent}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={false}
+          >
+            {/* Sección de Noticias */}
+            <NewsSection
+              news={news}
+              loading={newsLoading}
+              lastUpdate={newsLastUpdate}
+              onRefresh={refreshNews}
+            />
+
+            {/* Sección de YouTube con RSS */}
+            <YouTubeSection
+              videos={youtubeVideos}
+              loading={youtubeLoading}
+              lastUpdate={youtubeLastUpdate}
+              onRefresh={refreshVideos}
+            />
+
+            <View style={combinedStyles.bottomSpace} />
+          </ScrollView>
+        </View>
+      );
+    }
+
+    // Layout móvil - scroll vertical tradicional
+    return (
       <ScrollView 
         style={combinedStyles.scrollView}
         contentContainerStyle={combinedStyles.scrollContent}
@@ -345,8 +488,6 @@ export default function RadioScreen() {
             <Text style={combinedStyles.stationName}>La Max Stream Radio</Text>
             <Text style={combinedStyles.frequency}>95.5 FM</Text>
             
-            
-            {/* Componente unificado para mostrar información del livestream */}
             <LiveStreamIndicator
               liveStream={liveStream}
               mode={isVideoMode ? 'video' : 'audio'}
@@ -354,9 +495,7 @@ export default function RadioScreen() {
               onPress={() => startLiveStream(liveStream)}
             />
           </View>
-          
         </View>
-
 
         {/* Volume and Quality Info */}
         <View style={combinedStyles.controlsContainer}>
@@ -375,8 +514,6 @@ export default function RadioScreen() {
               </Text>
             </TVTouchable>
           </View>
-
-          
         </View>
 
         {/* Sección de Noticias */}
@@ -398,6 +535,18 @@ export default function RadioScreen() {
         {/* Bottom Space */}
         <View style={combinedStyles.bottomSpace} />
       </ScrollView>
+    );
+  };
+
+  return (
+    <LinearGradient
+      colors={['#1a1a2e', '#16213e', '#0f3460']}
+      style={combinedStyles.container}
+    >
+      <StatusBar style="light" />
+      <TVIndicator />
+      
+      {renderContent()}
     </LinearGradient>
   );
 }

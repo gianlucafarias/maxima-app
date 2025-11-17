@@ -1,4 +1,5 @@
 import { YouTubeVideo } from '@/hooks/useYouTubeRSS';
+import { TVTouchable } from '@/components/TVTouchable';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
@@ -10,7 +11,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View
 } from 'react-native';
 
@@ -217,7 +217,7 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
         <View style={styles.headerActions}>
           
           
-          <TouchableOpacity 
+          <TVTouchable 
             style={[styles.refreshButton, loading && styles.refreshButtonDisabled]}
             onPress={onRefresh}
             disabled={loading}
@@ -227,7 +227,7 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
               size={20} 
               color={loading ? "#666" : "#ff4757"} 
             />
-          </TouchableOpacity>
+          </TVTouchable>
         </View>
       </View>
       
@@ -253,11 +253,10 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
             contentContainerStyle={styles.videosScrollContent}
           >
             {videos.map((video) => (
-              <TouchableOpacity
+              <TVTouchable
                 key={video.id}
                 style={styles.videoCard}
                 onPress={() => openVideo(video.link, video.title)}
-                activeOpacity={0.8}
               >
                 <LinearGradient
                   colors={['rgba(255, 71, 87, 0.15)', 'rgba(255, 71, 87, 0.05)']}
@@ -303,15 +302,14 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
                     <Ionicons name="play-circle-outline" size={16} color="#ff4757" />
                   </View>
                 </LinearGradient>
-              </TouchableOpacity>
+              </TVTouchable>
             ))}
           </ScrollView>
 
           {/* Botón para ver más contenidos */}
-          <TouchableOpacity 
+          <TVTouchable 
             style={styles.viewMoreButton}
             onPress={openYouTubeChannel}
-            activeOpacity={0.8}
           >
             <LinearGradient
               colors={['#ff4757', '#ff3742']}
@@ -321,7 +319,7 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
               <Text style={styles.viewMoreText}>Ver más contenidos</Text>
               <Ionicons name="arrow-forward" size={16} color="#fff" />
             </LinearGradient>
-          </TouchableOpacity>
+          </TVTouchable>
         </>
       ) : null}
 
@@ -330,9 +328,9 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
         <View style={styles.emptyState}>
           <Ionicons name="logo-youtube" size={48} color="#666" />
           <Text style={styles.emptyText}>No hay videos disponibles</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={onRefresh}>
+          <TVTouchable style={styles.retryButton} onPress={onRefresh}>
             <Text style={styles.retryText}>Intentar nuevamente</Text>
-          </TouchableOpacity>
+          </TVTouchable>
         </View>
       ) : null}
     </View>

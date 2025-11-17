@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
-import { ActivityIndicator, Dimensions, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Platform, StyleSheet, View } from 'react-native';
 import { TVTouchable } from './TVTouchable';
 import { useTrackPlayer } from '../hooks/useTrackPlayer';
 
@@ -134,9 +134,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   playerCircle: {
-    width: width * 0.7,
-    height: width * 0.7,
-    borderRadius: (width * 0.7) / 2,
+    width: Platform.isTV ? width * 0.25 : width * 0.7,
+    height: Platform.isTV ? width * 0.25 : width * 0.7,
+    borderRadius: Platform.isTV ? (width * 0.25) / 2 : (width * 0.7) / 2,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',

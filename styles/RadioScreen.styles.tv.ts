@@ -9,14 +9,30 @@ const { width, height } = Dimensions.get('window');
 export const tvStyles = Platform.isTV ? StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 40,
+  },
+  // Layout de dos columnas
+  tvMainContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    paddingTop: 20,
+  },
+  tvLeftColumn: {
+    flex: 0.45, // 45% del ancho
+    paddingHorizontal: width * 0.03,
+  },
+  tvRightColumn: {
+    flex: 0.55, // 55% del ancho
+    paddingHorizontal: width * 0.03,
+  },
+  tvColumnContent: {
+    paddingBottom: 40,
   },
   logoContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: width * 0.08, // Mayor margen para overscan
-    marginBottom: 30,
+    paddingHorizontal: 10,
+    marginBottom: 20,
   },
   leftSpacer: {
     width: 60,
@@ -38,30 +54,30 @@ export const tvStyles = Platform.isTV ? StyleSheet.create({
   switchContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 40,
+    marginBottom: 20,
     backgroundColor: 'rgba(162, 155, 254, 0.1)',
-    marginHorizontal: width * 0.25, // Más centrado en TV
-    borderRadius: 30,
-    padding: 6,
-    minHeight: 70,
+    marginHorizontal: 15,
+    borderRadius: 25,
+    padding: 4,
+    minHeight: 50,
   },
   switchButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 25,
-    minWidth: 120,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    minWidth: 100,
   },
   switchButtonActive: {
     backgroundColor: '#6c5ce7',
   },
   switchText: {
     color: '#a29bfe',
-    marginLeft: 12,
-    fontSize: 22, // Más grande para TV
+    marginLeft: 8,
+    fontSize: 16, // Reducido
     fontWeight: '600',
     textAlign: 'center',
     flexShrink: 1,
@@ -70,25 +86,24 @@ export const tvStyles = Platform.isTV ? StyleSheet.create({
     color: 'white',
   },
   playerContainer: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 20,
+    marginVertical: 10,
   },
   stationInfo: {
     alignItems: 'center',
-    marginTop: 50,
+    marginTop: 20,
   },
   stationName: {
-    fontSize: 32, // Más grande para TV
+    fontSize: 22, // Reducido
     fontWeight: 'bold',
     color: 'white',
-    marginBottom: 8,
+    marginBottom: 5,
   },
   frequency: {
-    fontSize: 24, // Más grande para TV
+    fontSize: 18, // Reducido
     color: '#a29bfe',
-    marginBottom: 20,
+    marginBottom: 15,
   },
   whatsappContainer: {
     alignItems: 'center',
@@ -99,9 +114,9 @@ export const tvStyles = Platform.isTV ? StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#25D366',
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    borderRadius: 30,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 25,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -112,10 +127,10 @@ export const tvStyles = Platform.isTV ? StyleSheet.create({
     elevation: 5,
   },
   whatsappText: {
-    fontSize: 20, // Más grande para TV
+    fontSize: 16, // Reducido
     fontWeight: 'bold',
     color: 'white',
-    marginLeft: 12,
+    marginLeft: 10,
   },
   scrollView: {
     flex: 1,
@@ -125,7 +140,7 @@ export const tvStyles = Platform.isTV ? StyleSheet.create({
     paddingHorizontal: width * 0.05, // Margen de seguridad para overscan
   },
   controlsContainer: {
-    padding: 30,
+    padding: 15,
   },
   bottomSpace: {
     height: 80,

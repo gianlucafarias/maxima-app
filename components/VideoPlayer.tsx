@@ -149,8 +149,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
 const styles = StyleSheet.create({
   videoContainer: {
-    width: Platform.isTV ? width * 0.75 : width * 0.85,
-    height: Platform.isTV ? height * 0.5 : width * 0.6,
+    width: Platform.isTV ? width * 0.38 : width * 0.85,
+    height: Platform.isTV ? height * 0.35 : width * 0.6,
     borderRadius: 20,
     overflow: 'hidden',
   },

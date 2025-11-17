@@ -1,4 +1,5 @@
 import { NewsItem } from '@/types/youtube';
+import { TVTouchable } from '@/components/TVTouchable';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
@@ -9,7 +10,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View
 } from 'react-native';
 
@@ -90,7 +90,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({
     
         </View>
         
-        <TouchableOpacity 
+        <TVTouchable 
           style={[styles.refreshButton, loading && styles.refreshButtonDisabled]}
           onPress={onRefresh}
           disabled={loading}
@@ -100,7 +100,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({
             size={20} 
             color={loading ? "#666" : "#a29bfe"} 
           />
-        </TouchableOpacity>
+        </TVTouchable>
         
       </View>
 <Text style={styles.lastUpdateText}>
@@ -126,11 +126,10 @@ const NewsSection: React.FC<NewsSectionProps> = ({
           contentContainerStyle={styles.newsScrollContent}
         >
           {news.map((item) => (
-            <TouchableOpacity
+            <TVTouchable
               key={item.id}
               style={styles.newsCard}
               onPress={() => openNewsLink(item.link, item.title)}
-              activeOpacity={0.8}
             >
               <LinearGradient
                 colors={['rgba(108, 92, 231, 0.15)', 'rgba(162, 155, 254, 0.05)']}
@@ -163,7 +162,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({
                   <Ionicons name="open-outline" size={16} color="#a29bfe" />
                 </View>
               </LinearGradient>
-            </TouchableOpacity>
+            </TVTouchable>
           ))}
         </ScrollView>
       ) : null}
@@ -173,9 +172,9 @@ const NewsSection: React.FC<NewsSectionProps> = ({
         <View style={styles.emptyState}>
           <Ionicons name="newspaper-outline" size={48} color="#666" />
           <Text style={styles.emptyText}>No hay noticias disponibles</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={onRefresh}>
+          <TVTouchable style={styles.retryButton} onPress={onRefresh}>
             <Text style={styles.retryText}>Intentar nuevamente</Text>
-          </TouchableOpacity>
+          </TVTouchable>
         </View>
       ) : null}
     </View>
