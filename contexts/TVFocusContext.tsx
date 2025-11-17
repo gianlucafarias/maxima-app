@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
-import { useTVRemoteNavigation } from '@/hooks/useTVRemoteNavigation';
+import { useNativeTVRemote } from '@/hooks/useNativeTVRemote';
 
 interface FocusableElement {
   id: string;
@@ -34,9 +34,9 @@ export const TVFocusProvider: React.FC<{ children: React.ReactNode }> = ({ child
     forceUpdate({});
   }, []);
 
-  // Manejar eventos del control remoto usando el hook existente
-  useTVRemoteNavigation((event) => {
-    console.log('🎮🎮🎮 EVENTO RECIBIDO:', event.eventType, '| Foco actual:', focusedId);
+  // Manejar eventos del control remoto usando listener nativo
+  useNativeTVRemote((event) => {
+    console.log('🎮🎮🎮 EVENTO NATIVO RECIBIDO:', event.eventType, '| Foco actual:', focusedId);
 
     const focusablesArray = Array.from(focusableElementsRef.current.keys());
     const currentIndex = focusablesArray.indexOf(focusedId || '');

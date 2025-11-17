@@ -85,15 +85,16 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
 
 const styles = StyleSheet.create({
   focused: {
-    borderWidth: 4,
-    borderColor: '#00ffff', // CYAN brillante cuando está enfocado
-    backgroundColor: 'rgba(0, 255, 255, 0.2)',
-    transform: [{ scale: 1.08 }],
-    shadowColor: '#00ffff',
+    borderWidth: 8,
+    borderColor: '#ffff00', // AMARILLO BRILLANTE cuando está enfocado
+    backgroundColor: 'rgba(255, 255, 0, 0.3)',
+    transform: [{ scale: 1.15 }],
+    shadowColor: '#ffff00',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
-    shadowRadius: 20,
-    elevation: 25,
+    shadowRadius: 30,
+    elevation: 30,
+    zIndex: 9999,
   },
   unfocused: {
     borderWidth: 0,
