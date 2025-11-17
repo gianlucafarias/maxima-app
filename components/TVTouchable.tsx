@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Platform, StyleProp, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
+import { Platform, StyleProp, StyleSheet, TouchableOpacity, ViewStyle, View } from 'react-native';
 import { useTVFocus } from '../contexts/TVFocusContext';
 
 interface TVTouchableProps {
@@ -72,13 +72,23 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
   // Log cuando cambia el estado de foco
   useEffect(() => {
     if (Platform.isTV) {
-      console.log(`🎯 TVTouchable [${id}]:`, isFocused ? 'ENFOCADO ✨' : 'sin foco');
+      console.log(`🎯🎯🎯 TVTouchable [${id}]:`, isFocused ? '✨✨✨ ENFOCADO ✨✨✨' : '❌ sin foco');
+      if (isFocused) {
+        console.log(`🔥🔥🔥 ESTILO DE FOCO APLICADO A [${id}] - Borde ROJO de 20px`);
+      }
     }
   }, [isFocused, id]);
 
   return (
     <TouchableOpacity
-      style={[style, Platform.isTV && focusStyle]}
+      style={[
+        style, 
+        Platform.isTV && focusStyle,
+        Platform.isTV && isFocused && {
+          // Estilos adicionales cuando está enfocado para asegurar visibilidad
+          position: 'relative',
+        }
+      ]}
       onPress={handlePress}
       onFocus={handleFocus}
       disabled={disabled}
@@ -92,17 +102,17 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
 
 const styles = StyleSheet.create({
   focused: {
-    borderWidth: 12,
-    borderColor: '#ff0000', // ROJO BRILLANTE cuando está enfocado
-    backgroundColor: 'rgba(255, 0, 0, 0.4)',
-    transform: [{ scale: 1.2 }],
+    borderWidth: 20,
+    borderColor: '#ff0000', // ROJO BRILLANTE cuando está enfocado - MUY GRUESO
+    backgroundColor: 'rgba(255, 0, 0, 0.6)',
+    transform: [{ scale: 1.3 }],
     shadowColor: '#ff0000',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
-    shadowRadius: 40,
-    elevation: 50,
-    zIndex: 9999,
-    borderRadius: 8,
+    shadowRadius: 60,
+    elevation: 100,
+    zIndex: 99999,
+    borderRadius: 16,
   },
   unfocused: {
     borderWidth: 0,
