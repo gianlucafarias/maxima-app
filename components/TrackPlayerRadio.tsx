@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
-import { ActivityIndicator, Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, StyleSheet, View } from 'react-native';
+import { TVTouchable } from './TVTouchable';
 import { useTrackPlayer } from '../hooks/useTrackPlayer';
 
 const { width } = Dimensions.get('window');
@@ -106,16 +107,17 @@ export const TrackPlayerRadio = forwardRef<TrackPlayerRadioRef, TrackPlayerRadio
             colors={['#6c5ce7', '#a29bfe']}
             style={styles.visualizer}
           >
-            <TouchableOpacity
+            <TVTouchable
               style={[
                 styles.playButton,
                 isDisabled && styles.playButtonDisabled
               ]}
               onPress={handlePlayPause}
               disabled={isDisabled}
+              hasTVPreferredFocus={true}
             >
               {renderIcon()}
-            </TouchableOpacity>
+            </TVTouchable>
           </LinearGradient>
         </View>
       </LinearGradient>

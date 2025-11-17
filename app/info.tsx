@@ -1,4 +1,5 @@
 import { MaximaLogo } from '@/components/MaximaLogo';
+import { TVTouchable } from '@/components/TVTouchable';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
@@ -69,9 +70,9 @@ export default function InfoScreen() {
       >
         {/* Logo Header */}
         <View style={styles.logoContainer}>
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <TVTouchable style={styles.backButton} onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={28} color="#a29bfe" />
-          </TouchableOpacity>
+          </TVTouchable>
           <View style={styles.logoCenter}>
             <MaximaLogo width={140} height={44} color="white" />
           </View>
@@ -118,7 +119,7 @@ export default function InfoScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Contáctanos</Text>
           {contactInfo.map((contact, index) => (
-            <TouchableOpacity key={index}>
+            <TVTouchable key={index}>
               <LinearGradient
                 colors={['rgba(108, 92, 231, 0.15)', 'rgba(162, 155, 254, 0.05)']}
                 style={styles.contactCard}
@@ -129,7 +130,7 @@ export default function InfoScreen() {
                   <Text style={styles.contactValue}>{contact.value}</Text>
                 </View>
               </LinearGradient>
-            </TouchableOpacity>
+            </TVTouchable>
           ))}
         </View>
 
@@ -137,18 +138,18 @@ export default function InfoScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Seguinos</Text>
           <View style={styles.socialContainer}>
-            <TouchableOpacity style={styles.socialButton}>
-              <Ionicons name="logo-facebook" size={30} color="#4267B2" onPress={() => Linking.openURL('https://www.facebook.com/MaxStreamRadio')} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton}>
-              <Ionicons name="logo-instagram" size={30} color="#E4405F" onPress={() => Linking.openURL('https://www.instagram.com/lamaxmaxima/')} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton}>
-              <Ionicons name="logo-twitter" size={30} color="#1DA1F2" onPress={() => Linking.openURL('https://x.com/LaMaxMaxima')} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton}>
-              <Ionicons name="logo-youtube" size={30} color="#FF0000" onPress={() => Linking.openURL('https://www.youtube.com/@maximafm955ceres')} />
-            </TouchableOpacity>
+            <TVTouchable style={styles.socialButton} onPress={() => Linking.openURL('https://www.facebook.com/MaxStreamRadio')}>
+              <Ionicons name="logo-facebook" size={30} color="#4267B2" />
+            </TVTouchable>
+            <TVTouchable style={styles.socialButton} onPress={() => Linking.openURL('https://www.instagram.com/lamaxmaxima/')}>
+              <Ionicons name="logo-instagram" size={30} color="#E4405F" />
+            </TVTouchable>
+            <TVTouchable style={styles.socialButton} onPress={() => Linking.openURL('https://x.com/LaMaxMaxima')}>
+              <Ionicons name="logo-twitter" size={30} color="#1DA1F2" />
+            </TVTouchable>
+            <TVTouchable style={styles.socialButton} onPress={() => Linking.openURL('https://www.youtube.com/@maximafm955ceres')}>
+              <Ionicons name="logo-youtube" size={30} color="#FF0000" />
+            </TVTouchable>
           </View>
         </View>
 

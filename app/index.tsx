@@ -4,13 +4,15 @@ import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 // Importaciones de componentes separados
 import { LiveStreamIndicator } from '@/components/LiveStreamIndicator';
 import { MaximaLogo } from '@/components/MaximaLogo';
 import NewsSection from '@/components/NewsSection';
 import { TrackPlayerRadio, TrackPlayerRadioRef } from '@/components/TrackPlayerRadio';
+import { TVIndicator } from '@/components/TVIndicator';
+import { TVTouchable } from '@/components/TVTouchable';
 import VideoPlayer from '@/components/VideoPlayer';
 import YouTubeSection from '@/components/YouTubeSection';
 
@@ -24,6 +26,7 @@ import { useYouTubeRSS } from '@/hooks/useYouTubeRSS';
 // Importaciones de configuraciones y utilidades
 import { STREAMING_URLS } from '@/config/constants';
 import { styles } from '@/styles/RadioScreen.styles';
+import { tvStyles } from '@/styles/RadioScreen.styles.tv';
 
 
 export default function RadioScreen() {
@@ -31,6 +34,9 @@ export default function RadioScreen() {
   const [isVideoMode, setIsVideoMode] = useState(false);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const router = useRouter();
+  
+  // Combinar estilos según plataforma
+  const combinedStyles = Platform.isTV ? { ...styles, ...tvStyles } : styles;
 
   const openInfo = () => {
     console.log('🔍 Botón info presionado - intentando navegar a info');
@@ -249,62 +255,73 @@ export default function RadioScreen() {
   return (
     <LinearGradient
       colors={['#1a1a2e', '#16213e', '#0f3460']}
-      style={styles.container}
+      style={combinedStyles.container}
     >
       <StatusBar style="light" />
+      <TVIndicator />
       
       <ScrollView 
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        style={combinedStyles.scrollView}
+        contentContainerStyle={combinedStyles.scrollContent}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
       >
         {/* Logo Header */}
-        <View style={styles.logoContainer}>
-          <View style={styles.leftSpacer} />
-          <View style={styles.logoCenter}>
-            <TouchableOpacity>
-              <MaximaLogo width={160} height={50} color="white" />
-            </TouchableOpacity>
+        <View style={combinedStyles.logoContainer}>
+          <View style={combinedStyles.leftSpacer} />
+          <View style={combinedStyles.logoCenter}>
+            <MaximaLogo width={160} height={50} color="white" />
           </View>
-          <TouchableOpacity style={styles.infoButton} onPress={() => openInfo()}>
+          <TVTouchable style={combinedStyles.infoButton} onPress={() => openInfo()}>
             <Ionicons name="information-circle-outline" size={28} color="#a29bfe" />
-          </TouchableOpacity>
+          </TVTouchable>
         </View>
 
         {/* Mode Toggle Switch */}
-        <View style={styles.switchContainer}>
-          <TouchableOpacity 
-            style={[styles.switchButton, !isVideoMode && styles.switchButtonActive]}
+        <View style={combinedStyles.switchContainer}>
+          <TVTouchable 
+            style={[combinedStyles.switchButton, !isVideoMode && combinedStyles.switchButtonActive]}
             onPress={() => !isVideoMode || toggleMode()}
+            hasTVPreferredFocus={!isVideoMode}
           >
             <Ionicons 
               name="volume-high" 
               size={20} 
               color={!isVideoMode ? 'white' : '#a29bfe'} 
             />
-            <Text style={[styles.switchText, !isVideoMode && styles.switchTextActive]}>
+            <Text 
+              style={[combinedStyles.switchText, !isVideoMode && combinedStyles.switchTextActive]}
+              numberOfLines={1}
+              adjustsFontSizeToFit={true}
+              allowFontScaling={false}
+            >
               Audio
             </Text>
-          </TouchableOpacity>
+          </TVTouchable>
           
-          <TouchableOpacity 
-            style={[styles.switchButton, isVideoMode && styles.switchButtonActive]}
+          <TVTouchable 
+            style={[combinedStyles.switchButton, isVideoMode && combinedStyles.switchButtonActive]}
             onPress={() => isVideoMode || toggleMode()}
+            hasTVPreferredFocus={isVideoMode}
           >
             <Ionicons 
               name="videocam" 
               size={20} 
               color={isVideoMode ? 'white' : '#a29bfe'} 
             />
-            <Text style={[styles.switchText, isVideoMode && styles.switchTextActive]}>
+            <Text 
+              style={[combinedStyles.switchText, isVideoMode && combinedStyles.switchTextActive]}
+              numberOfLines={1}
+              adjustsFontSizeToFit={true}
+              allowFontScaling={false}
+            >
               Video
             </Text>
-          </TouchableOpacity>
+          </TVTouchable>
         </View>
 
         {/* Central Player */}
-        <View style={styles.playerContainer} collapsable={false}>
+        <View style={combinedStyles.playerContainer} collapsable={false}>
           {isVideoMode ? (
             <View key="video-player" collapsable={false}>
               <VideoPlayer 
@@ -324,9 +341,9 @@ export default function RadioScreen() {
           )}
 
           {/* Station Info */}
-          <View style={styles.stationInfo}>
-            <Text style={styles.stationName}>La Max Stream Radio</Text>
-            <Text style={styles.frequency}>95.5 FM</Text>
+          <View style={combinedStyles.stationInfo}>
+            <Text style={combinedStyles.stationName}>La Max Stream Radio</Text>
+            <Text style={combinedStyles.frequency}>95.5 FM</Text>
             
             
             {/* Componente unificado para mostrar información del livestream */}
@@ -342,10 +359,10 @@ export default function RadioScreen() {
 
 
         {/* Volume and Quality Info */}
-        <View style={styles.controlsContainer}>
-          <View style={styles.whatsappContainer}>
-            <TouchableOpacity 
-              style={styles.whatsappButton}
+        <View style={combinedStyles.controlsContainer}>
+          <View style={combinedStyles.whatsappContainer}>
+            <TVTouchable 
+              style={combinedStyles.whatsappButton}
               onPress={openWhatsApp}
             >
               <Ionicons 
@@ -353,10 +370,10 @@ export default function RadioScreen() {
                 size={28} 
                 color="white" 
               />
-              <Text style={styles.whatsappText}>
+              <Text style={combinedStyles.whatsappText}>
                 Enviar mensaje
               </Text>
-            </TouchableOpacity>
+            </TVTouchable>
           </View>
 
           
@@ -379,7 +396,7 @@ export default function RadioScreen() {
         />
 
         {/* Bottom Space */}
-        <View style={styles.bottomSpace} />
+        <View style={combinedStyles.bottomSpace} />
       </ScrollView>
     </LinearGradient>
   );

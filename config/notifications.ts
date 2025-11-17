@@ -8,13 +8,18 @@ export const FIREBASE_CONFIG = {
   appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID
 };
 
+const DASHBOARD_BASE_URL = process.env.EXPO_PUBLIC_NOTIFICATIONS_BASE_URL || '';
+const DASHBOARD_REGISTER_ENDPOINT = process.env.EXPO_PUBLIC_NOTIFICATIONS_REGISTER_ENDPOINT || '/api/register-device';
+const DASHBOARD_SEND_ENDPOINT = process.env.EXPO_PUBLIC_NOTIFICATIONS_SEND_ENDPOINT || '/api/send-notification';
+const DASHBOARD_STATS_ENDPOINT = process.env.EXPO_PUBLIC_NOTIFICATIONS_STATS_ENDPOINT || '/api/stats';
+
 // URL del dashboard para registro de dispositivos
 export const DASHBOARD_CONFIG = {
-  baseUrl: "https://tu-dashboard.com", // 🔧 URL de tu dashboard
+  baseUrl: DASHBOARD_BASE_URL,
   endpoints: {
-    registerDevice: "/api/register-device",
-    sendNotification: "/api/send-notification",
-    getStats: "/api/stats"
+    registerDevice: DASHBOARD_REGISTER_ENDPOINT,
+    sendNotification: DASHBOARD_SEND_ENDPOINT,
+    getStats: DASHBOARD_STATS_ENDPOINT
   }
 };
 

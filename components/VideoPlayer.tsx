@@ -1,12 +1,13 @@
 import { STREAMING_URLS } from '@/config/constants';
+import { TVTouchable } from '@/components/TVTouchable';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Linking from 'expo-linking';
 import React from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 interface VideoPlayerProps {
   selectedVideoId: string | null;
@@ -81,13 +82,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             : 'No se pudo cargar el stream de Twitch.'}
         </Text>
         {selectedVideoId && (
-          <TouchableOpacity 
+          <TVTouchable 
             style={styles.nativePlayerButton}
             onPress={() => openInNativeYouTube(selectedVideoId)}
           >
             <Ionicons name="open" size={16} color="white" />
             <Text style={styles.nativePlayerText}>Abrir en YouTube</Text>
-          </TouchableOpacity>
+          </TVTouchable>
         )}
       </LinearGradient>
     </View>
@@ -133,14 +134,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           true;
         ` : undefined}
       />
-      {selectedVideoId && (
-        <TouchableOpacity 
+        {selectedVideoId && (
+        <TVTouchable 
           style={styles.backToLiveButton}
           onPress={onBackToLive}
         >
           <Ionicons name="radio" size={16} color="white" />
           <Text style={styles.backToLiveText}>Volver al Live</Text>
-        </TouchableOpacity>
+        </TVTouchable>
       )}
     </View>
   );
@@ -148,8 +149,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
 const styles = StyleSheet.create({
   videoContainer: {
-    width: width * 0.85,
-    height: width * 0.6,
+    width: Platform.isTV ? width * 0.75 : width * 0.85,
+    height: Platform.isTV ? height * 0.5 : width * 0.6,
     borderRadius: 20,
     overflow: 'hidden',
   },
@@ -212,14 +213,16 @@ const styles = StyleSheet.create({
   },
   backToLiveButton: {
     position: 'absolute',
-    top: 10,
-    left: 10,
-    padding: 5,
+    top: Platform.isTV ? 20 : 10,
+    left: Platform.isTV ? 20 : 10,
+    padding: Platform.isTV ? 12 : 5,
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 20,
   },
   backToLiveText: {
-    fontSize: 14,
+    fontSize: Platform.isTV ? 18 : 14,
     fontWeight: 'bold',
     color: 'white',
     marginLeft: 5,

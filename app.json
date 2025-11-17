@@ -2,8 +2,8 @@
   "expo": {
     "name": "La Max Stream Radio",
     "slug": "la-max-955-app",
-    "version": "1.0.3",
-    "orientation": "portrait",
+    "version": "1.0.8",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "la-max-955-app",
     "userInterfaceStyle": "automatic",
@@ -41,8 +41,10 @@
     "android": {
       "package": "com.maximaceres.app",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#1a1a2e"
+        "foregroundImage": "./assets/images/adaptative-icon-foreground.png",
+        "backgroundImage": "./assets/images/adaptative-icon-background.png",
+        "backgroundColor": "#1a1a2e",
+        "monochromeImage": "./assets/images/adaptative-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
@@ -53,9 +55,12 @@
         "RECEIVE_BOOT_COMPLETED",
         "VIBRATE",
         "RECORD_AUDIO",
-        "MODIFY_AUDIO_SETTINGS"
+        "MODIFY_AUDIO_SETTINGS",
+        "POST_NOTIFICATIONS"
       ],
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "allowBackup": true,
+      "supportsRtl": true
     },
     "web": {
       "bundler": "metro",
@@ -92,9 +97,10 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/images/icon.png",
+          "icon": "./assets/images/notification-icon.png",
           "color": "#6c5ce7",
-          "defaultChannel": "default"
+          "defaultChannel": "default",
+          "smallIcon": "./assets/images/notification-icon.png"
         }
       ],
       "expo-build-properties"

@@ -1,32 +1,65 @@
 import { useEffect } from 'react';
-import { AppState, Linking } from 'react-native';
+import { AppState, Linking, Platform } from 'react-native';
 import TrackPlayer, { Event, useTrackPlayerEvents } from 'react-native-track-player';
 
 /**
  * Hook para manejar eventos de notificaciones de TrackPlayer
- * Maneja clicks en notificaciones sin interferir con expo-router
+ * Maneja clicks en notificaciones y controles remotos (incluye TV)
+ * sin interferir con expo-router
  */
 export const useTrackPlayerNotifications = () => {
   
   // Listener para eventos específicos de TrackPlayer
-  useTrackPlayerEvents([Event.RemotePlay, Event.RemotePause, Event.RemoteStop], async (event) => {
-    console.log('🎵 Evento remoto de TrackPlayer:', event.type);
+  // Incluye eventos de controles remotos de TV
+  useTrackPlayerEvents([
+    Event.RemotePlay, 
+    Event.RemotePause, 
+    Event.RemoteStop,
+    Event.RemoteNext,
+    Event.RemotePrevious,
+    Event.RemoteSeek,
+    Event.RemoteDuck,
+  ], async (event) => {
+    const eventSource = Platform.isTV ? '📺 TV Remote' : '🎵 Notificación';
+    console.log(`${eventSource} - Evento de TrackPlayer:`, event.type);
     
     try {
       switch (event.type) {
         case Event.RemotePlay:
-          console.log('▶️ Play desde notificación');
+          console.log(`▶️ Play desde ${eventSource}`);
           await TrackPlayer.play();
           break;
           
         case Event.RemotePause:
-          console.log('⏸️ Pause desde notificación');
+          console.log(`⏸️ Pause desde ${eventSource}`);
           await TrackPlayer.pause();
           break;
           
         case Event.RemoteStop:
-          console.log('⏹️ Stop desde notificación');
+          console.log(`⏹️ Stop desde ${eventSource}`);
           await TrackPlayer.stop();
+          break;
+          
+        case Event.RemoteNext:
+          console.log(`⏭️ Next desde ${eventSource}`);
+          // En una radio en vivo, "next" podría no hacer nada
+          // o reiniciar el stream
+          break;
+          
+        case Event.RemotePrevious:
+          console.log(`⏮️ Previous desde ${eventSource}`);
+          // Similar a "next" en radio en vivo
+          break;
+          
+        case Event.RemoteSeek:
+          console.log(`⏩ Seek desde ${eventSource}`);
+          // En streaming en vivo, normalmente no se permite seek
+          break;
+          
+        case Event.RemoteDuck:
+          console.log(`🔉 Duck (reducir volumen) desde ${eventSource}`);
+          // Manejar audio ducking (reducir volumen temporalmente)
+          // TrackPlayer ya lo maneja automáticamente
           break;
       }
     } catch (error) {

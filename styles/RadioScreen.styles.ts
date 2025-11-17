@@ -36,9 +36,10 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 30,
     backgroundColor: 'rgba(162, 155, 254, 0.1)',
-    marginHorizontal: 60,
+    marginHorizontal: 40,
     borderRadius: 25,
     padding: 4,
+    minHeight: 52,
   },
   switchButton: {
     flex: 1,
@@ -46,8 +47,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     borderRadius: 20,
+    minWidth: 80,
   },
   switchButtonActive: {
     backgroundColor: '#6c5ce7',
@@ -57,6 +59,8 @@ export const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 16,
     fontWeight: '600',
+    textAlign: 'center',
+    flexShrink: 1,
   },
   switchTextActive: {
     color: 'white',
