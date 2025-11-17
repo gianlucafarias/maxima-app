@@ -92,6 +92,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({
         </View>
         
         <TVTouchable 
+          id="news-refresh"
           style={[styles.refreshButton, loading && styles.refreshButtonDisabled]}
           onPress={onRefresh}
           disabled={loading}
@@ -127,9 +128,10 @@ const NewsSection: React.FC<NewsSectionProps> = ({
           contentContainerStyle={styles.newsScrollContent}
           scrollEnabled={Platform.isTV ? false : true}
         >
-          {news.map((item) => (
+          {news.map((item, index) => (
             <TVTouchable
               key={item.id}
+              id={`news-${index}`}
               style={styles.newsCard}
               onPress={() => openNewsLink(item.link, item.title)}
             >
@@ -174,7 +176,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({
         <View style={styles.emptyState}>
           <Ionicons name="newspaper-outline" size={48} color="#666" />
           <Text style={styles.emptyText}>No hay noticias disponibles</Text>
-          <TVTouchable style={styles.retryButton} onPress={onRefresh}>
+          <TVTouchable id="news-retry" style={styles.retryButton} onPress={onRefresh}>
             <Text style={styles.retryText}>Intentar nuevamente</Text>
           </TVTouchable>
         </View>

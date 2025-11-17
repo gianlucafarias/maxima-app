@@ -1,7 +1,9 @@
-import React from 'react';
-import { Platform, StyleProp, TouchableOpacity, ViewStyle } from 'react-native';
+import React, { useEffect } from 'react';
+import { Platform, StyleProp, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
+import { useTVFocus } from '../contexts/TVFocusContext';
 
 interface TVTouchableProps {
+  id: string; // ID único requerido para el sistema de foco
   style?: StyleProp<ViewStyle>;
   focusedStyle?: StyleProp<ViewStyle>;
   hasTVPreferredFocus?: boolean;
@@ -11,37 +13,60 @@ interface TVTouchableProps {
 }
 
 /**
- * Componente simple que funciona en móvil y TV
- * SIN estilos adicionales para no romper el diseño
+ * Componente con sistema de foco manual para TV
+ * Muestra claramente cuál elemento está enfocado
  */
 export const TVTouchable: React.FC<TVTouchableProps> = ({
+  id,
   style,
   hasTVPreferredFocus = false,
   children,
   onPress,
   disabled = false,
 }) => {
+  const { focusedId, setFocusedId, registerFocusable, unregisterFocusable } = useTVFocus();
+  const isFocused = Platform.isTV && focusedId === id;
+
+  // Registrar este elemento como focusable
+  useEffect(() => {
+    if (Platform.isTV) {
+      registerFocusable(id);
+      
+      // Si tiene preferencia de foco inicial, establecerlo
+      if (hasTVPreferredFocus) {
+        setFocusedId(id);
+      }
+    }
+    
+    return () => {
+      if (Platform.isTV) {
+        unregisterFocusable(id);
+      }
+    };
+  }, [id, hasTVPreferredFocus, registerFocusable, unregisterFocusable, setFocusedId]);
+
   const handlePress = () => {
-    console.log('🎯🔥 CLICK/ENTER PRESIONADO');
+    console.log('🎯🔥 PRESIONADO:', id);
     if (onPress) {
       onPress();
     }
   };
 
   const handleFocus = () => {
-    console.log('🎯✨✨✨ FOCO RECIBIDO ✨✨✨');
+    if (Platform.isTV) {
+      console.log('🎯✨ FOCO MANUAL EN:', id);
+      setFocusedId(id);
+    }
   };
 
-  const handleBlur = () => {
-    console.log('🎯 Foco perdido');
-  };
+  // Estilo visible cuando está enfocado
+  const focusStyle = isFocused ? styles.focused : styles.unfocused;
 
   return (
     <TouchableOpacity
-      style={style}
+      style={[style, Platform.isTV && focusStyle]}
       onPress={handlePress}
       onFocus={handleFocus}
-      onBlur={handleBlur}
       disabled={disabled}
       activeOpacity={Platform.isTV ? 1 : 0.7}
       hasTVPreferredFocus={Platform.isTV ? hasTVPreferredFocus : undefined}
@@ -50,3 +75,22 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  focused: {
+    borderWidth: 6,
+    borderColor: '#ff00ff', // MAGENTA brillante cuando está enfocado
+    backgroundColor: 'rgba(255, 0, 255, 0.25)',
+    transform: [{ scale: 1.05 }],
+    shadowColor: '#ff00ff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 15,
+    elevation: 20,
+  },
+  unfocused: {
+    borderWidth: 2,
+    borderColor: 'rgba(0, 255, 136, 0.4)', // Verde claro cuando NO está enfocado
+    backgroundColor: 'rgba(0, 255, 136, 0.05)',
+  },
+});

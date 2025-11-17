@@ -108,6 +108,7 @@ export const TrackPlayerRadio = forwardRef<TrackPlayerRadioRef, TrackPlayerRadio
             style={styles.visualizer}
           >
             <TVTouchable
+              id="radio-play-pause"
               style={[
                 styles.playButton,
                 isDisabled && styles.playButtonDisabled

@@ -219,6 +219,7 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
           
           
           <TVTouchable 
+            id="youtube-refresh"
             style={[styles.refreshButton, loading && styles.refreshButtonDisabled]}
             onPress={onRefresh}
             disabled={loading}
@@ -254,9 +255,10 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
             contentContainerStyle={styles.videosScrollContent}
             scrollEnabled={Platform.isTV ? false : true}
           >
-            {videos.map((video) => (
+            {videos.map((video, index) => (
               <TVTouchable
                 key={video.id}
+                id={`youtube-video-${index}`}
                 style={styles.videoCard}
                 onPress={() => openVideo(video.link, video.title)}
               >
@@ -310,6 +312,7 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
 
           {/* Botón para ver más contenidos */}
           <TVTouchable 
+            id="youtube-view-more"
             style={styles.viewMoreButton}
             onPress={openYouTubeChannel}
           >
@@ -330,7 +333,7 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
         <View style={styles.emptyState}>
           <Ionicons name="logo-youtube" size={48} color="#666" />
           <Text style={styles.emptyText}>No hay videos disponibles</Text>
-          <TVTouchable style={styles.retryButton} onPress={onRefresh}>
+          <TVTouchable id="youtube-retry" style={styles.retryButton} onPress={onRefresh}>
             <Text style={styles.retryText}>Intentar nuevamente</Text>
           </TVTouchable>
         </View>

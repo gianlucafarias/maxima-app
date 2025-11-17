@@ -272,7 +272,7 @@ export default function RadioScreen() {
               <View style={combinedStyles.logoCenter}>
                 <MaximaLogo width={140} height={45} color="white" />
               </View>
-              <TVTouchable style={combinedStyles.infoButton} onPress={() => openInfo()}>
+              <TVTouchable id="info-button" style={combinedStyles.infoButton} onPress={() => openInfo()}>
                 <Ionicons name="information-circle-outline" size={26} color="#a29bfe" />
               </TVTouchable>
             </View>
@@ -280,6 +280,7 @@ export default function RadioScreen() {
             {/* Mode Toggle Switch */}
             <View style={combinedStyles.switchContainer}>
               <TVTouchable 
+                id="audio-switch"
                 style={[combinedStyles.switchButton, !isVideoMode && combinedStyles.switchButtonActive]}
                 onPress={() => !isVideoMode || toggleMode()}
                 hasTVPreferredFocus={!isVideoMode}
@@ -300,6 +301,7 @@ export default function RadioScreen() {
               </TVTouchable>
               
               <TVTouchable 
+                id="video-switch"
                 style={[combinedStyles.switchButton, isVideoMode && combinedStyles.switchButtonActive]}
                 onPress={() => isVideoMode || toggleMode()}
                 hasTVPreferredFocus={isVideoMode}
@@ -358,6 +360,7 @@ export default function RadioScreen() {
             <View style={combinedStyles.controlsContainer}>
               <View style={combinedStyles.whatsappContainer}>
                 <TVTouchable 
+                  id="whatsapp-button"
                   style={combinedStyles.whatsappButton}
                   onPress={openWhatsApp}
                 >

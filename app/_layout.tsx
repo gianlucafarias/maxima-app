@@ -8,6 +8,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useTrackPlayerNotifications } from '@/hooks/useTrackPlayerNotifications';
+import { TVFocusProvider } from '@/contexts/TVFocusContext';
 
 // Importar setup de TrackPlayer - se auto-ejecuta y registra servicio una sola vez
 import '../config/trackPlayerSetup';
@@ -38,12 +39,14 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="info" />
-      </Stack>
-      <StatusBar style="light" />
-    </ThemeProvider>
+    <TVFocusProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="info" />
+        </Stack>
+        <StatusBar style="light" />
+      </ThemeProvider>
+    </TVFocusProvider>
   );
 }

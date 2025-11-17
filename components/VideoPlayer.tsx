@@ -83,6 +83,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         </Text>
         {selectedVideoId && (
           <TVTouchable 
+            id="open-youtube-native"
             style={styles.nativePlayerButton}
             onPress={() => openInNativeYouTube(selectedVideoId)}
           >
@@ -136,6 +137,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       />
         {selectedVideoId && (
         <TVTouchable 
+          id="back-to-live"
           style={styles.backToLiveButton}
           onPress={onBackToLive}
         >
