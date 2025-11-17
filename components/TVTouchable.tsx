@@ -61,8 +61,16 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
 
   const handleFocus = () => {
     if (Platform.isTV) {
-      console.log('🎯✨ FOCO MANUAL EN:', id);
+      console.log('🎯✨ FOCO NATIVO EN:', id);
+      // Con react-native-tvos, onFocus funciona correctamente
       setFocusedId(id);
+    }
+  };
+
+  const handleBlur = () => {
+    if (Platform.isTV && focusedId === id) {
+      console.log('🎯 Foco perdido:', id);
+      // El sistema nativo manejará el cambio de foco automáticamente
     }
   };
 
@@ -91,6 +99,7 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
       ]}
       onPress={handlePress}
       onFocus={handleFocus}
+      onBlur={handleBlur}
       disabled={disabled}
       activeOpacity={Platform.isTV ? 1 : 0.7}
       hasTVPreferredFocus={Platform.isTV ? hasTVPreferredFocus : undefined}

@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
-import { useNativeTVRemote } from '@/hooks/useNativeTVRemote';
 
 interface FocusableElement {
   id: string;
@@ -34,42 +33,9 @@ export const TVFocusProvider: React.FC<{ children: React.ReactNode }> = ({ child
     forceUpdate({});
   }, []);
 
-  // Manejar eventos del control remoto usando listener nativo
-  useNativeTVRemote((event) => {
-    console.log('🎮🎮🎮 EVENTO NATIVO RECIBIDO:', event.eventType, '| Foco actual:', focusedId);
-
-    const focusablesArray = Array.from(focusableElementsRef.current.keys());
-    const currentIndex = focusablesArray.indexOf(focusedId || '');
-
-    console.log('📋 Total elementos:', focusablesArray.length, '| Índice actual:', currentIndex, '| IDs:', focusablesArray);
-
-    if (event.eventType === 'select') {
-      console.log('✅✅✅ SELECT presionado en:', focusedId);
-      const element = focusableElementsRef.current.get(focusedId || '');
-      if (element?.onPress) {
-        console.log('🔥🔥🔥 Ejecutando onPress de:', focusedId);
-        element.onPress();
-      } else {
-        console.log('⚠️ Elemento sin onPress:', focusedId);
-      }
-    } else if (event.eventType === 'down' || event.eventType === 'right') {
-      // Navegar al siguiente elemento
-      if (focusablesArray.length > 0) {
-        const nextIndex = (currentIndex + 1) % focusablesArray.length;
-        const nextId = focusablesArray[nextIndex];
-        console.log('⬇️➡️ Navegando de', focusedId, 'a', nextId);
-        setFocusedId(nextId);
-      }
-    } else if (event.eventType === 'up' || event.eventType === 'left') {
-      // Navegar al elemento anterior
-      if (focusablesArray.length > 0) {
-        const prevIndex = currentIndex <= 0 ? focusablesArray.length - 1 : currentIndex - 1;
-        const prevId = focusablesArray[prevIndex];
-        console.log('⬆️⬅️ Navegando de', focusedId, 'a', prevId);
-        setFocusedId(prevId);
-      }
-    }
-  });
+  // Con react-native-tvos, el sistema nativo maneja la navegación automáticamente
+  // Solo trackeamos el foco visual para mostrar qué elemento está seleccionado
+  // Los eventos onFocus/onBlur funcionan correctamente con react-native-tvos
 
   // Log cuando cambia el foco
   useEffect(() => {
