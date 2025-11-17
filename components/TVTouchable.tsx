@@ -83,13 +83,10 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
   // Estilo visible cuando está enfocado
   const focusStyle = isFocused ? styles.focused : styles.unfocused;
 
-  // Log cuando cambia el estado de foco
+  // Log cuando cambia el estado de foco (solo en desarrollo)
   useEffect(() => {
-    if (Platform.isTV) {
-      console.log(`🎯🎯🎯 TVTouchable [${id}]:`, isFocused ? '✨✨✨ ENFOCADO ✨✨✨' : '❌ sin foco');
-      if (isFocused) {
-        console.log(`🔥🔥🔥 ESTILO DE FOCO APLICADO A [${id}] - Borde ROJO de 20px`);
-      }
+    if (Platform.isTV && __DEV__) {
+      console.log(`🎯 TVTouchable [${id}]:`, isFocused ? '✨ ENFOCADO' : 'sin foco');
     }
   }, [isFocused, id]);
 
@@ -98,10 +95,6 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
       style={[
         style, 
         Platform.isTV && focusStyle,
-        Platform.isTV && isFocused && {
-          // Estilos adicionales cuando está enfocado para asegurar visibilidad
-          position: 'relative',
-        }
       ]}
       onPress={handlePress}
       onFocus={handleFocus}
@@ -117,17 +110,15 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
 
 const styles = StyleSheet.create({
   focused: {
-    borderWidth: 20,
-    borderColor: '#ff0000', // ROJO BRILLANTE cuando está enfocado - MUY GRUESO
-    backgroundColor: 'rgba(255, 0, 0, 0.6)',
-    transform: [{ scale: 1.3 }],
-    shadowColor: '#ff0000',
+    borderWidth: 3,
+    borderColor: '#a29bfe', // Color púrpura que combina con el tema de la app
+    backgroundColor: 'rgba(162, 155, 254, 0.1)', // Fondo sutil
+    shadowColor: '#a29bfe',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 60,
-    elevation: 100,
-    zIndex: 99999,
-    borderRadius: 16,
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    elevation: 5,
+    zIndex: 10,
   },
   unfocused: {
     borderWidth: 0,
