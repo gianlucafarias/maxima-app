@@ -106,7 +106,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     : styles.videoContainer;
 
   const videoContent = (
-    <View style={containerStyle} collapsable={false}>
+    <TVTouchable
+      id="video-player-container"
+      style={containerStyle}
+      onPress={Platform.isTV && !isFullscreen ? toggleFullscreen : undefined}
+      hasTVPreferredFocus={Platform.isTV && !isFullscreen}
+    >
+      <View style={styles.videoInnerContainer} collapsable={false} pointerEvents="box-none">
         <WebView
           source={getVideoSource()}
           style={styles.webView}
@@ -119,7 +125,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           bounces={false}
           scrollEnabled={false}
           allowsLinkPreview={false}
-          // Deshabilitar foco en WebView para que los botones puedan recibir foco
+          // Deshabilitar foco en WebView para que el contenedor pueda recibir foco
           focusable={Platform.isTV ? false : undefined}
           renderLoading={renderLoading}
           renderError={renderError}
@@ -148,54 +154,37 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           ` : undefined}
         />
         
-        {/* Botones de control - Capa superior para recibir foco */}
-        {Platform.isTV && (
-          <>
-            {/* Botón de pantalla completa */}
-            <TVTouchable 
-              id="fullscreen-toggle"
-              style={[
-                styles.controlButton,
-                isFullscreen ? styles.fullscreenButton : styles.fullscreenButtonNormal
-              ]}
-              onPress={toggleFullscreen}
-              hasTVPreferredFocus={!selectedVideoId && !isFullscreen}
-            >
-              <Ionicons 
-                name={isFullscreen ? "contract" : "expand"} 
-                size={Platform.isTV ? 24 : 20} 
-                color="white" 
-              />
-              {!isFullscreen && (
-                <Text style={styles.controlButtonText}>Pantalla completa</Text>
-              )}
-            </TVTouchable>
+        {/* Indicador visual de pantalla completa en TV */}
+        {Platform.isTV && !isFullscreen && (
+          <View style={styles.fullscreenHint}>
+            <Ionicons name="expand" size={Platform.isTV ? 32 : 24} color="rgba(255, 255, 255, 0.8)" />
+            <Text style={styles.fullscreenHintText}>Presiona OK para pantalla completa</Text>
+          </View>
+        )}
+        
+        {/* Botones de control - Solo en pantalla completa */}
+        {Platform.isTV && isFullscreen && (
+          <TVTouchable 
+            id="exit-fullscreen"
+            style={styles.exitFullscreenButton}
+            onPress={toggleFullscreen}
+            hasTVPreferredFocus={true}
+          >
+            <Ionicons name="close" size={24} color="white" />
+            <Text style={styles.exitFullscreenText}>Salir</Text>
+          </TVTouchable>
+        )}
 
-            {/* Botón volver al live (solo cuando no está en pantalla completa) */}
-            {selectedVideoId && !isFullscreen && (
-              <TVTouchable 
-                id="back-to-live"
-                style={styles.backToLiveButton}
-                onPress={onBackToLive}
-              >
-                <Ionicons name="radio" size={16} color="white" />
-                <Text style={styles.backToLiveText}>Volver al Live</Text>
-              </TVTouchable>
-            )}
-
-            {/* Botón salir de pantalla completa */}
-            {isFullscreen && (
-              <TVTouchable 
-                id="exit-fullscreen"
-                style={styles.exitFullscreenButton}
-                onPress={toggleFullscreen}
-                hasTVPreferredFocus={true}
-              >
-                <Ionicons name="close" size={24} color="white" />
-                <Text style={styles.exitFullscreenText}>Salir</Text>
-              </TVTouchable>
-            )}
-          </>
+        {/* Botón volver al live (solo cuando no está en pantalla completa) */}
+        {selectedVideoId && !isFullscreen && Platform.isTV && (
+          <TVTouchable 
+            id="back-to-live"
+            style={styles.backToLiveButton}
+            onPress={onBackToLive}
+          >
+            <Ionicons name="radio" size={16} color="white" />
+            <Text style={styles.backToLiveText}>Volver al Live</Text>
+          </TVTouchable>
         )}
 
         {/* Botón volver al live para móvil */}
@@ -210,6 +199,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </TVTouchable>
         )}
       </View>
+    </TVTouchable>
   );
 
   // En TV, usar Modal para pantalla completa
@@ -245,8 +235,29 @@ const styles = StyleSheet.create({
     borderRadius: 0,
     backgroundColor: '#000',
   },
+  videoInnerContainer: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   webView: {
     flex: 1,
+  },
+  fullscreenHint: {
+    position: 'absolute',
+    bottom: Platform.isTV ? 30 : 20,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.7,
+  },
+  fullscreenHintText: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: Platform.isTV ? 16 : 12,
+    fontWeight: '600',
+    marginTop: 8,
+    textAlign: 'center',
   },
   loadingContainer: {
     flex: 1,
