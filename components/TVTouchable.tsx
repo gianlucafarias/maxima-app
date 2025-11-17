@@ -90,11 +90,23 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
     }
   }, [isFocused, id]);
 
+  // Extraer borderRadius del style si existe para mantener consistencia
+  const styleArray = Array.isArray(style) ? style : [style];
+  const borderRadius = styleArray.reduce((acc: number | undefined, s: any) => {
+    if (s && typeof s === 'object' && s.borderRadius !== undefined) {
+      return s.borderRadius;
+    }
+    return acc;
+  }, undefined);
+
   return (
     <TouchableOpacity
       style={[
         style, 
         Platform.isTV && focusStyle,
+        Platform.isTV && isFocused && borderRadius !== undefined && {
+          borderRadius: borderRadius,
+        },
       ]}
       onPress={handlePress}
       onFocus={handleFocus}
@@ -110,14 +122,14 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
 
 const styles = StyleSheet.create({
   focused: {
-    borderWidth: 3,
+    borderWidth: 2,
     borderColor: '#a29bfe', // Color púrpura que combina con el tema de la app
-    backgroundColor: 'rgba(162, 155, 254, 0.1)', // Fondo sutil
+    backgroundColor: 'rgba(162, 155, 254, 0.05)', // Fondo muy sutil
     shadowColor: '#a29bfe',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 2,
     zIndex: 10,
   },
   unfocused: {
