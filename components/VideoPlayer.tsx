@@ -170,8 +170,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             onPress={toggleFullscreen}
             hasTVPreferredFocus={true}
           >
-            <Ionicons name="close" size={24} color="white" />
-            <Text style={styles.exitFullscreenText}>Salir</Text>
+            <Ionicons name="close" size={Platform.isTV ? 32 : 24} color="white" />
           </TVTouchable>
         )}
 
@@ -357,19 +356,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: Platform.isTV ? 20 : 10,
     right: Platform.isTV ? 20 : 10,
-    padding: Platform.isTV ? 15 : 10,
-    flexDirection: 'row',
+    padding: Platform.isTV ? 12 : 8,
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 0, 0, 0.8)',
-    borderRadius: 20,
+    justifyContent: 'center',
     zIndex: 9999,
     elevation: 10,
-  },
-  exitFullscreenText: {
-    fontSize: Platform.isTV ? 18 : 14,
-    fontWeight: 'bold',
-    color: 'white',
-    marginLeft: 8,
   },
 });
 

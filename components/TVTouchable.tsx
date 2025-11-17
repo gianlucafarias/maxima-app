@@ -90,23 +90,22 @@ export const TVTouchable: React.FC<TVTouchableProps> = ({
     }
   }, [isFocused, id]);
 
-  // Extraer borderRadius del style si existe para mantener consistencia
+  // Extraer borderRadius y overflow del style si existe para mantener consistencia
   const styleArray = Array.isArray(style) ? style : [style];
-  const borderRadius = styleArray.reduce((acc: number | undefined, s: any) => {
-    if (s && typeof s === 'object' && s.borderRadius !== undefined) {
-      return s.borderRadius;
+  const styleProps = styleArray.reduce((acc: any, s: any) => {
+    if (s && typeof s === 'object') {
+      if (s.borderRadius !== undefined) acc.borderRadius = s.borderRadius;
+      if (s.overflow !== undefined) acc.overflow = s.overflow;
     }
     return acc;
-  }, undefined);
+  }, {});
 
   return (
     <TouchableOpacity
       style={[
         style, 
         Platform.isTV && focusStyle,
-        Platform.isTV && isFocused && borderRadius !== undefined && {
-          borderRadius: borderRadius,
-        },
+        Platform.isTV && isFocused && Object.keys(styleProps).length > 0 && styleProps,
       ]}
       onPress={handlePress}
       onFocus={handleFocus}
