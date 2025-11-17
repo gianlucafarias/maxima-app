@@ -31,7 +31,8 @@ import { tvStyles } from '@/styles/RadioScreen.styles.tv';
 
 export default function RadioScreen() {
   // Estados locales
-  const [isVideoMode, setIsVideoMode] = useState(false);
+  // En TV, el modo video es el predeterminado
+  const [isVideoMode, setIsVideoMode] = useState(Platform.isTV ? true : false);
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const router = useRouter();
   
@@ -284,7 +285,7 @@ export default function RadioScreen() {
                 id="audio-switch"
                 style={[combinedStyles.switchButton, !isVideoMode && combinedStyles.switchButtonActive]}
                 onPress={() => !isVideoMode || toggleMode()}
-                hasTVPreferredFocus={!isVideoMode}
+                hasTVPreferredFocus={false}
               >
                 <Ionicons 
                   name="volume-high" 
@@ -305,7 +306,7 @@ export default function RadioScreen() {
                 id="video-switch"
                 style={[combinedStyles.switchButton, isVideoMode && combinedStyles.switchButtonActive]}
                 onPress={() => isVideoMode || toggleMode()}
-                hasTVPreferredFocus={isVideoMode}
+                hasTVPreferredFocus={Platform.isTV ? true : isVideoMode}
               >
                 <Ionicons 
                   name="videocam" 
@@ -456,7 +457,7 @@ export default function RadioScreen() {
           <TVTouchable 
             style={[combinedStyles.switchButton, isVideoMode && combinedStyles.switchButtonActive]}
             onPress={() => isVideoMode || toggleMode()}
-            hasTVPreferredFocus={isVideoMode}
+            hasTVPreferredFocus={Platform.isTV ? true : isVideoMode}
           >
             <Ionicons 
               name="videocam" 
