@@ -3,15 +3,11 @@ import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
 import android.os.Bundle
-import android.view.KeyEvent
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
-import com.facebook.react.bridge.WritableMap
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.modules.core.DeviceEventManagerModule
 
 import expo.modules.ReactActivityDelegateWrapper
 
@@ -65,53 +61,5 @@ class MainActivity : ReactActivity() {
       // Use the default back button implementation on Android S
       // because it's doing more than [Activity.moveTaskToBack] in fact.
       super.invokeDefaultOnBackPressed()
-  }
-
-  /**
-   * Captura eventos de teclado del control remoto de TV
-   * Envía eventos a JavaScript PERO también permite que React Native los procese
-   */
-  override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
-    if (event?.action == KeyEvent.ACTION_DOWN) {
-      val keyCode = event.keyCode
-      android.util.Log.d("MainActivity", "🎮🎮🎮 dispatchKeyEvent: keyCode=$keyCode")
-      
-      val reactInstanceManager = reactNativeHost.reactInstanceManager
-      
-      if (reactInstanceManager != null) {
-        val reactContext = reactInstanceManager.currentReactContext
-        
-        if (reactContext != null) {
-          val eventType = when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_UP -> "up"
-            KeyEvent.KEYCODE_DPAD_DOWN -> "down"
-            KeyEvent.KEYCODE_DPAD_LEFT -> "left"
-            KeyEvent.KEYCODE_DPAD_RIGHT -> "right"
-            KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> "select"
-            KeyEvent.KEYCODE_BACK -> "back"
-            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> "playPause"
-            else -> null
-          }
-          
-          if (eventType != null) {
-            android.util.Log.d("MainActivity", "📤 Enviando evento a JS: $eventType")
-            
-            val params = Arguments.createMap()
-            params.putString("eventType", eventType)
-            params.putInt("keyCode", keyCode)
-            
-            reactContext
-              .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-              .emit("TVRemoteKeyEvent", params)
-            
-            android.util.Log.d("MainActivity", "✅ Evento enviado correctamente")
-          }
-        }
-      }
-    }
-    
-    // NO retornar true - permitir que React Native también procese el evento
-    // Esto permite que el sistema de foco nativo funcione
-    return super.dispatchKeyEvent(event)
   }
 }
