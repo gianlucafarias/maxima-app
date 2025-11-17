@@ -8,6 +8,7 @@ import {
   Alert,
   Image,
   Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -251,6 +252,7 @@ const YouTubeSection: React.FC<YouTubeSectionProps> = ({
             showsHorizontalScrollIndicator={false}
             style={styles.videosScroll}
             contentContainerStyle={styles.videosScrollContent}
+            scrollEnabled={Platform.isTV ? false : true}
           >
             {videos.map((video) => (
               <TVTouchable

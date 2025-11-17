@@ -259,11 +259,13 @@ export default function RadioScreen() {
       return (
         <View style={combinedStyles.tvMainContainer}>
           {/* Columna Izquierda - Player y Controles */}
-          <ScrollView 
+          <View 
             style={combinedStyles.tvLeftColumn}
+          >
+          <ScrollView 
             contentContainerStyle={combinedStyles.tvColumnContent}
             showsVerticalScrollIndicator={false}
-            nestedScrollEnabled={false}
+            scrollEnabled={false}
           >
             {/* Logo Header */}
             <View style={combinedStyles.logoContainer}>
@@ -371,13 +373,16 @@ export default function RadioScreen() {
               </View>
             </View>
           </ScrollView>
+          </View>
 
           {/* Columna Derecha - Noticias y Videos */}
-          <ScrollView 
+          <View 
             style={combinedStyles.tvRightColumn}
+          >
+          <ScrollView 
             contentContainerStyle={combinedStyles.tvColumnContent}
             showsVerticalScrollIndicator={false}
-            nestedScrollEnabled={false}
+            scrollEnabled={false}
           >
             {/* Sección de Noticias */}
             <NewsSection
@@ -397,6 +402,7 @@ export default function RadioScreen() {
 
             <View style={combinedStyles.bottomSpace} />
           </ScrollView>
+          </View>
         </View>
       );
     }

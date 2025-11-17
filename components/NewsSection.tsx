@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -124,6 +125,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({
           showsHorizontalScrollIndicator={false}
           style={styles.newsScroll}
           contentContainerStyle={styles.newsScrollContent}
+          scrollEnabled={Platform.isTV ? false : true}
         >
           {news.map((item) => (
             <TVTouchable
