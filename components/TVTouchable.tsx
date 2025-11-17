@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Platform, StyleProp, StyleSheet, TouchableOpacity, ViewStyle, View, TVEventHandler } from 'react-native';
+import React, { useEffect } from 'react';
+import { Platform, StyleProp, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import { useTVFocus } from '../contexts/TVFocusContext';
 
 interface TVTouchableProps {

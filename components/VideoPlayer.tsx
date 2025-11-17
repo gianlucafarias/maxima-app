@@ -3,8 +3,9 @@ import { TVTouchable } from '@/components/TVTouchable';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Linking from 'expo-linking';
-import React from 'react';
-import { Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Dimensions, Modal, Platform, StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { WebView } from 'react-native-webview';
 
 const { width, height } = Dimensions.get('window');
@@ -18,6 +19,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   selectedVideoId,
   onBackToLive
 }) => {
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const getVideoSource = () => {
     if (selectedVideoId) {
       // URL mejorada de YouTube con parámetros adicionales para mejor compatibilidad
@@ -95,58 +97,134 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     </View>
   );
 
-  return (
-    <View style={styles.videoContainer} collapsable={false}>
-      <WebView
-        source={getVideoSource()}
-        style={styles.webView}
-        allowsInlineMediaPlayback={true}
-        mediaPlaybackRequiresUserAction={false}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        startInLoadingState={true}
-        allowsBackForwardNavigationGestures={false}
-        bounces={false}
-        scrollEnabled={false}
-        allowsLinkPreview={false}
-        renderLoading={renderLoading}
-        renderError={renderError}
-        onError={(syntheticEvent) => {
-          const { nativeEvent } = syntheticEvent;
-          console.warn('WebView error: ', nativeEvent);
-        }}
-        onHttpError={(syntheticEvent) => {
-          const { nativeEvent } = syntheticEvent;
-          console.warn('WebView HTTP error: ', nativeEvent);
-        }}
-        // Configuraciones adicionales para mejorar compatibilidad
-        mixedContentMode="compatibility"
-        thirdPartyCookiesEnabled={true}
-        sharedCookiesEnabled={true}
-        // Headers adicionales para YouTube
-        injectedJavaScript={selectedVideoId ? `
-          // Configurar referrer para YouTube
-          if (document.referrer === '') {
-            Object.defineProperty(document, 'referrer', {
-              value: 'https://expo.dev/',
-              writable: false
-            });
-          }
-          true;
-        ` : undefined}
-      />
-        {selectedVideoId && (
-        <TVTouchable 
-          id="back-to-live"
-          style={styles.backToLiveButton}
-          onPress={onBackToLive}
-        >
-          <Ionicons name="radio" size={16} color="white" />
-          <Text style={styles.backToLiveText}>Volver al Live</Text>
-        </TVTouchable>
-      )}
-    </View>
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
+  const containerStyle = isFullscreen 
+    ? [styles.videoContainer, styles.fullscreenContainer]
+    : styles.videoContainer;
+
+  const videoContent = (
+    <View style={containerStyle} collapsable={false}>
+        <WebView
+          source={getVideoSource()}
+          style={styles.webView}
+          allowsInlineMediaPlayback={true}
+          mediaPlaybackRequiresUserAction={false}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+          startInLoadingState={true}
+          allowsBackForwardNavigationGestures={false}
+          bounces={false}
+          scrollEnabled={false}
+          allowsLinkPreview={false}
+          renderLoading={renderLoading}
+          renderError={renderError}
+          onError={(syntheticEvent) => {
+            const { nativeEvent } = syntheticEvent;
+            console.warn('WebView error: ', nativeEvent);
+          }}
+          onHttpError={(syntheticEvent) => {
+            const { nativeEvent } = syntheticEvent;
+            console.warn('WebView HTTP error: ', nativeEvent);
+          }}
+          // Configuraciones adicionales para mejorar compatibilidad
+          mixedContentMode="compatibility"
+          thirdPartyCookiesEnabled={true}
+          sharedCookiesEnabled={true}
+          // Headers adicionales para YouTube
+          injectedJavaScript={selectedVideoId ? `
+            // Configurar referrer para YouTube
+            if (document.referrer === '') {
+              Object.defineProperty(document, 'referrer', {
+                value: 'https://expo.dev/',
+                writable: false
+              });
+            }
+            true;
+          ` : undefined}
+        />
+        
+        {/* Botones de control */}
+        {Platform.isTV && (
+          <>
+            {/* Botón de pantalla completa */}
+            <TVTouchable 
+              id="fullscreen-toggle"
+              style={[
+                styles.controlButton,
+                isFullscreen ? styles.fullscreenButton : styles.fullscreenButtonNormal
+              ]}
+              onPress={toggleFullscreen}
+            >
+              <Ionicons 
+                name={isFullscreen ? "contract" : "expand"} 
+                size={Platform.isTV ? 24 : 20} 
+                color="white" 
+              />
+              {!isFullscreen && (
+                <Text style={styles.controlButtonText}>Pantalla completa</Text>
+              )}
+            </TVTouchable>
+
+            {/* Botón volver al live (solo cuando no está en pantalla completa) */}
+            {selectedVideoId && !isFullscreen && (
+              <TVTouchable 
+                id="back-to-live"
+                style={styles.backToLiveButton}
+                onPress={onBackToLive}
+              >
+                <Ionicons name="radio" size={16} color="white" />
+                <Text style={styles.backToLiveText}>Volver al Live</Text>
+              </TVTouchable>
+            )}
+
+            {/* Botón salir de pantalla completa */}
+            {isFullscreen && (
+              <TVTouchable 
+                id="exit-fullscreen"
+                style={styles.exitFullscreenButton}
+                onPress={toggleFullscreen}
+              >
+                <Ionicons name="close" size={24} color="white" />
+                <Text style={styles.exitFullscreenText}>Salir</Text>
+              </TVTouchable>
+            )}
+          </>
+        )}
+
+        {/* Botón volver al live para móvil */}
+        {selectedVideoId && !Platform.isTV && (
+          <TVTouchable 
+            id="back-to-live"
+            style={styles.backToLiveButton}
+            onPress={onBackToLive}
+          >
+            <Ionicons name="radio" size={16} color="white" />
+            <Text style={styles.backToLiveText}>Volver al Live</Text>
+          </TVTouchable>
+        )}
+      </View>
   );
+
+  // En TV, usar Modal para pantalla completa
+  if (Platform.isTV && isFullscreen) {
+    return (
+      <Modal
+        visible={isFullscreen}
+        transparent={false}
+        animationType="fade"
+        onRequestClose={toggleFullscreen}
+      >
+        <StatusBar hidden={true} />
+        {videoContent}
+      </Modal>
+    );
+  }
+
+  // Renderizado normal
+  return videoContent;
 };
 
 const styles = StyleSheet.create({
@@ -155,6 +233,18 @@ const styles = StyleSheet.create({
     height: Platform.isTV ? height * 0.35 : width * 0.6,
     borderRadius: 20,
     overflow: 'hidden',
+  },
+  fullscreenContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: width,
+    height: height,
+    borderRadius: 0,
+    zIndex: 9999,
+    backgroundColor: '#000',
   },
   webView: {
     flex: 1,
@@ -228,6 +318,46 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
     marginLeft: 5,
+  },
+  controlButton: {
+    position: 'absolute',
+    top: Platform.isTV ? 20 : 10,
+    right: Platform.isTV ? 20 : 10,
+    padding: Platform.isTV ? 12 : 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 20,
+    zIndex: 10,
+  },
+  fullscreenButtonNormal: {
+    // Estilo normal para el botón de pantalla completa
+  },
+  fullscreenButton: {
+    // Estilo cuando está en pantalla completa (botón de salir)
+  },
+  controlButtonText: {
+    fontSize: Platform.isTV ? 16 : 12,
+    fontWeight: 'bold',
+    color: 'white',
+    marginLeft: 8,
+  },
+  exitFullscreenButton: {
+    position: 'absolute',
+    top: Platform.isTV ? 20 : 10,
+    right: Platform.isTV ? 20 : 10,
+    padding: Platform.isTV ? 15 : 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 0, 0, 0.8)',
+    borderRadius: 20,
+    zIndex: 10,
+  },
+  exitFullscreenText: {
+    fontSize: Platform.isTV ? 18 : 14,
+    fontWeight: 'bold',
+    color: 'white',
+    marginLeft: 8,
   },
 });
 

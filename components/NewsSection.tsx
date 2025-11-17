@@ -1,5 +1,5 @@
-import { NewsItem } from '@/types/youtube';
 import { TVTouchable } from '@/components/TVTouchable';
+import { NewsItem } from '@/types/youtube';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useRef } from 'react';
